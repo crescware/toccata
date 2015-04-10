@@ -1,0 +1,25 @@
+{
+  "name": "toccata",
+  "version": "0.0.1",
+  "description": "Cresc Toccata is the utility for AngularJS >= 1.4 / Angular 2",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://armorik83@github.com/crescware/toccata.git"
+  },
+  "keywords": [
+    "Angular",
+    "AngularJS",
+    "flux",
+    "framework"
+  ],
+  "author": "Crescware",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/crescware/toccata/issues"
+  },
+  "homepage": "https://github.com/crescware/toccata"
+}
