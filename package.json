@@ -21,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/crescware/toccata/issues"
   },
-  "homepage": "https://github.com/crescware/toccata"
+  "homepage": "https://github.com/crescware/toccata",
+  "devDependencies": {
+    "angular": "^1.4.0-beta.6",
+    "angular2": "^2.0.0-alpha.18",
+    "typescript": "^1.5.0-alpha"
+  }
 }
