@@ -8,13 +8,18 @@ npm-debug.log
 # for gulp
 .tscache/
 coverage/
+typings/
+
+# for test
 test-es5/
 test-espowered/
-typings/
+test/e2e/**/
+!test/e2e/fixtures/
 
 # TypeScript
 *.js
 *.js.map
+
 
 !gulpfile.js
 !index.js
