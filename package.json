@@ -4,7 +4,9 @@
   "description": "Cresc Toccata is the utility for AngularJS >= 1.4 / Angular 2",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "e2e": "gulp e2e",
+    "test": "gulp test",
+    "watch": "gulp watch"
   },
   "repository": {
     "type": "git",
