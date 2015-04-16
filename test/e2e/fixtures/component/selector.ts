@@ -7,6 +7,8 @@ let toccata: Toccata = toccata_(angular);
 
 let {Component, View, bootstrap} = toccata;
 
+toccata.initModule('toccataFixtures', []);
+
 @Component({
   selector: 'hello'
 })

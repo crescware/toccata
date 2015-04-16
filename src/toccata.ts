@@ -16,6 +16,7 @@ export class Toccata {
   Component: Decoratable;
   View: Decoratable;
   core: any; // angular
+  coreName: string; // module name, AngularJS 1.x only
   operatingMode: string;
 
   /**
@@ -30,59 +31,126 @@ export class Toccata {
   }
 
   /**
-   * @returns {Function}
+   * AngularJS 1.x angular.module('name', ['requires'])
+   *
+   * @param {string} moduleName
+   * @param {Array<string>} requires
    */
-  private bootstrapFactory(): Function {
+  initModule(moduleName: string, requires: string[]) {
     if (this.operatingMode === 'v2') {
-      return this.core.bootstrap;
+      return;
     }
-    return () => {};
+    this.core.module(moduleName, requires);
+    this.coreName = moduleName;
   }
 
   /**
-   * @param {*} angular
-   * @param {string} mode
+   * @returns {Function}
+   */
+  private bootstrapFactory(): Function {
+    return (this.operatingMode === 'v2')
+      ? this.bootstrapFactoryForV2()
+      : this.bootstrapFactoryForV1();
+  }
+
+  /**
+   * Return Angular 2 bootstrap()
+   *
+   * @returns {function(*, ?*=, ?Function=): void}
+   */
+  private bootstrapFactoryForV2(): (appComponentType: any, componentInjectableBindings?: any, errorReporter?: Function) => void {
+    return this.core.bootstrap;
+  }
+
+  /**
+   * Return AngularJS 1.x bootstrap()
+   * If you are already doing Toccata#initModule(), it is not nothing
+   *
+   * @returns {Function}
+   */
+  private bootstrapFactoryForV1(): Function {
+    return this.core.bootstrap;
+  }
+
+  /**
    * @returns {Decoratable}
    */
   private ComponentFactory(): Decoratable {
-    if (this.operatingMode === 'v2') {
-      return function Component(def: any) {
-        var annotation = new this.core.Component(def);
-        return function(decoratee: any) {
-          decoratee.annotations = decoratee.annotations || [];
-          if (def.injectables) {
-            decoratee.parameters = decoratee.parameters || [def.injectables];
-          }
-          decoratee.annotations.push(annotation);
-          return decoratee;
-        };
+    return (this.operatingMode === 'v2')
+      ? this.ComponentFactoryForV2()
+      : this.ComponentFactoryForV1();
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private ComponentFactoryForV2(): Decoratable {
+    const Component = (def: any) => {
+      var annotation = new this.core.Component(def);
+      return function(decoratee: any) {
+        decoratee.annotations = decoratee.annotations || [];
+        if (def.injectables) {
+          decoratee.parameters = decoratee.parameters || [def.injectables];
+        }
+        decoratee.annotations.push(annotation);
+        return decoratee;
       };
-    }
+    };
+    return Component;
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private ComponentFactoryForV1(): Decoratable {
     return (def: any) => {
       return (decoratee: any) => {
+        if (!decoratee._toccataDdoCache) {
+          throw new Error('View annotation is required');
+        }
+        decoratee._toccataDdoCache.restrict = 'E';
+        decoratee._toccataDdoCache.controller = decoratee;
+        this.core.module(this.coreName).directive(def.selector, () => decoratee._toccataDdoCache);
         return decoratee;
       };
     };
   }
 
   /**
-   * @param {*} angular
-   * @param {string} mode
    * @returns {Decoratable}
    */
   private ViewFactory(): Decoratable {
-    if (this.operatingMode === 'v2') {
-      return function View(def: any) {
-        var annotation = new this.core.View(def);
-        return function(decoratee: any) {
-          decoratee.annotations = decoratee.annotations || [];
-          decoratee.annotations.push(annotation);
-          return decoratee;
-        };
+    return (this.operatingMode === 'v2')
+      ? this.ViewFactoryForV2()
+      : this.ViewFactoryForV1();
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private ViewFactoryForV2(): Decoratable {
+    const View = (def: any) => {
+      var annotation = new this.core.View(def);
+      return function(decoratee: any) {
+        decoratee.annotations = decoratee.annotations || [];
+        decoratee.annotations.push(annotation);
+        return decoratee;
       };
-    }
+    };
+    return View;
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private ViewFactoryForV1(): Decoratable {
     return (def: any) => {
+      const ddo = {
+        template: def.template
+      };
+
       return (decoratee: any) => {
+        decoratee._toccataDdoCache = ddo;
         return decoratee;
       };
     };
