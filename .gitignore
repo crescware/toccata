@@ -15,6 +15,7 @@ test-es5/
 test-espowered/
 test/e2e/**/
 !test/e2e/fixtures/
+!test/e2e/fixtures/**/
 
 # TypeScript
 *.js
