@@ -2,8 +2,8 @@
 'use strict';
 
 import angular from './take-angular';
-import {ToccataStatic, default as toccata_} from '../../../src/toccata';
-let toccata: ToccataStatic = toccata_(angular);
+import {Toccata, default as toccata_} from '../../../src/toccata';
+let toccata: Toccata = toccata_(angular);
 
 window.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('toccata-mode')) {

@@ -5,71 +5,86 @@
 'use strict';
 import operatingMode from './operating-mode';
 
-export interface ToccataStatic {
+type Decoratable = (def: any) => (decoratee: any) => any;
+
+export default function toccata(angular: any): Toccata {
+  return new Toccata(angular);
+}
+
+export class Toccata {
   bootstrap: Function;
-  Component: (def: any) => (decoratee: any) => any;
-  View: (def: any) => (decoratee: any) => any;
-  core: any;
+  Component: Decoratable;
+  View: Decoratable;
+  core: any; // angular
   operatingMode: string;
-}
 
-function bootstrapFactory(angular: any, mode: string) {
-  if (mode === 'v2') {
-    return angular.bootstrap;
+  /**
+   * @constructor
+   */
+  constructor(core: any) {
+    this.operatingMode = operatingMode(core);
+    this.core = core;
+    this.bootstrap = this.bootstrapFactory();
+    this.Component = this.ComponentFactory();
+    this.View      = this.ViewFactory();
   }
-  return () => {};
-}
 
-function ComponentFactory(angular: any, mode: string) {
-  if (mode === 'v2') {
-    return function Component(def: any) {
-      var annotation = new angular.Component(def);
-      return function (decoratee: any) {
-        decoratee.annotations = decoratee.annotations || [];
-        if (def.injectables) {
-          decoratee.parameters  = decoratee.parameters || [def.injectables];
-        }
-        decoratee.annotations.push(annotation);
+  /**
+   * @returns {Function}
+   */
+  private bootstrapFactory(): Function {
+    if (this.operatingMode === 'v2') {
+      return this.core.bootstrap;
+    }
+    return () => {};
+  }
+
+  /**
+   * @param {*} angular
+   * @param {string} mode
+   * @returns {Decoratable}
+   */
+  private ComponentFactory(): Decoratable {
+    if (this.operatingMode === 'v2') {
+      return function Component(def: any) {
+        var annotation = new this.core.Component(def);
+        return function(decoratee: any) {
+          decoratee.annotations = decoratee.annotations || [];
+          if (def.injectables) {
+            decoratee.parameters = decoratee.parameters || [def.injectables];
+          }
+          decoratee.annotations.push(annotation);
+          return decoratee;
+        };
+      };
+    }
+    return (def: any) => {
+      return (decoratee: any) => {
         return decoratee;
       };
     };
   }
-  return (def: any) => {
-    return (decoratee: any) => {
-      return decoratee;
-    };
-  };
-}
 
-function ViewFactory(angular: any, mode: string) {
-  if (mode === 'v2') {
-    return function View(def: any) {
-      var annotation = new angular.View(def);
-      return function (decoratee: any) {
-        decoratee.annotations = decoratee.annotations || [];
-        decoratee.annotations.push(annotation);
+  /**
+   * @param {*} angular
+   * @param {string} mode
+   * @returns {Decoratable}
+   */
+  private ViewFactory(): Decoratable {
+    if (this.operatingMode === 'v2') {
+      return function View(def: any) {
+        var annotation = new this.core.View(def);
+        return function(decoratee: any) {
+          decoratee.annotations = decoratee.annotations || [];
+          decoratee.annotations.push(annotation);
+          return decoratee;
+        };
+      };
+    }
+    return (def: any) => {
+      return (decoratee: any) => {
         return decoratee;
       };
     };
   }
-  return (def: any) => {
-    return (decoratee: any) => {
-      return decoratee;
-    };
-  };
-}
-
-export default function toccata(angular: any): ToccataStatic {
-  let mode = operatingMode(angular);
-  let bootstrap = bootstrapFactory(angular, mode);
-  let Component = ComponentFactory(angular, mode);
-  let View = ViewFactory(angular, mode);
-
-  return {
-    bootstrap: bootstrap,
-    Component: Component,
-    View: View,
-    core: angular,
-    operatingMode: mode
-  };
 }
