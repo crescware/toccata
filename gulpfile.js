@@ -56,7 +56,7 @@ gulp.task('watch', ['watchify', 'watch:js'], function() {
 
 /* watch */
 gulp.task('exec-watch', ['test'], function() {
-  gulp.watch([`${opt.src}/**/*.ts`, `${opt.test}/**/*.es6`], ['test'])
+  gulp.watch([`${opt.src}/**/*.ts`, `${opt.test}/unit/**/*.es6`], ['test'])
     .on('error', function(err) {
       process.exit(1);
     });
@@ -95,7 +95,7 @@ function mochaTask(target) {
 }
 gulp.task('mocha:unit', mochaTask('unit'));
 gulp.task('mocha:e2e',  mochaTask('e2e'));
-gulp.task('test', function(done) {seq('ts:src_', ['babel:src', 'babel:test'], 'espower', 'mocha:unit', done)});
+gulp.task('test', function(done) {seq('ts:src', 'babel:test', 'espower', 'mocha:unit', done)});
 
 /* e2e build */
 var target = [
@@ -115,7 +115,7 @@ var allE2eCp = target.map(function(v) {
   `]));
   return taskName;
 });
-gulp.task('e2e-Cp', allE2eCp);
+gulp.task('e2e-cp', allE2eCp);
 
 var allE2eLn = target.map(function(v) {
   var name = `e2e-ln:${v}`;
@@ -135,4 +135,4 @@ gulp.task('clean:e2e', del.bind(null, target.map(function(v) {
   return `${opt.e2e}/${v}/*.html`;
 })));
 
-gulp.task('e2e', function(done) {seq('clean:e2e', 'ts:fixtures', ['e2e-Cp', 'e2e-ln'], 'e2e-browserify', 'mocha:e2e', done)});
+gulp.task('e2e', function(done) {seq('clean:e2e', 'ts:fixtures', ['e2e-cp', 'e2e-ln'], 'e2e-browserify', 'mocha:e2e', done)});
