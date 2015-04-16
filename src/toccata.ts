@@ -2,6 +2,7 @@
  * Cresc Toccata
  * @copyright © 2015 Crescware
  */
+'use strict';
 import operatingMode from './operating-mode';
 
 export interface ToccataStatic {

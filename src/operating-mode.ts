@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * return the operating mode of toccata
  *

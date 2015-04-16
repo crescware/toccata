@@ -1,4 +1,5 @@
 /// <reference path="../../../typings/node/node.d.ts" />
+'use strict';
 
 import angular from './take-angular';
 import {ToccataStatic, default as toccata_} from '../../../src/toccata';
