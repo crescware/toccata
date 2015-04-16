@@ -1,8 +1,9 @@
 /// <reference path="../../../typings/node/node.d.ts" />
 
 import angular from './take-angular';
-import toccata from '../../../src/toccata';
+import {ToccataStatic, default as toccata_} from '../../../src/toccata';
+var toccata: ToccataStatic = toccata_(angular);
 
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('toccata-mode').innerText = toccata(angular).operatingMode;
+  document.getElementById('toccata-mode').innerText = toccata.operatingMode;
 });
