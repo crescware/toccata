@@ -2,8 +2,12 @@
 
 import angular from './take-angular';
 import {ToccataStatic, default as toccata_} from '../../../src/toccata';
-var toccata: ToccataStatic = toccata_(angular);
+let toccata: ToccataStatic = toccata_(angular);
 
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('toccata-mode').innerText = toccata.operatingMode;
+  if (document.getElementById('toccata-mode')) {
+    document.getElementById('toccata-mode').innerText = toccata.operatingMode;
+  }
 });
+
+import './component/selector';
