@@ -18,7 +18,7 @@ export default function operatingMode(angular: any): string {
 
   let preReleaseVer = ((v: {full: string}): {phase: string; num: number} => {
     let full = v.full.split('-')[1];
-    return (!full) ? void 0 : {
+    return (!full) ? {phase: void 0, num: void 0} : {
       phase: full.split('.')[0],
       num: +full.split('.')[1]
     };
