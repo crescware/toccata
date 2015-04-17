@@ -6,7 +6,9 @@
   "scripts": {
     "e2e": "gulp e2e",
     "test": "gulp test",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "1-4": "cd ./test/e2e/1-4-latest && ss --port 8080",
+    "2-0": "cd ./test/e2e/2-0-0-alpha-19 && ss --port 8080"
   },
   "repository": {
     "type": "git",
