@@ -18,6 +18,7 @@ export class Toccata {
   core: any; // angular
   coreName: string; // module name, AngularJS 1.x only
   operatingMode: string;
+  For: Function;
 
   /**
    * @constructor
@@ -28,6 +29,10 @@ export class Toccata {
     this.bootstrap = this.bootstrapFactory();
     this.Component = this.ComponentFactory();
     this.View      = this.ViewFactory();
+
+    if (this.operatingMode === 'v2') {
+      this.For = this.core.For || console.warn('angular2.For not found');
+    }
   }
 
   /**
