@@ -20,6 +20,8 @@ export class Toccata {
   operatingMode: string;
   For: Function;
 
+  private _uuid: string;
+
   /**
    * @constructor
    */
@@ -32,6 +34,12 @@ export class Toccata {
 
     if (this.operatingMode === 'v2') {
       this.For = this.core.For || console.warn('angular2.For not found');
+    }
+    if (this.operatingMode === 'v1') {
+      this._uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
     }
   }
 
@@ -74,7 +82,13 @@ export class Toccata {
    * @returns {Function}
    */
   private bootstrapFactoryForV1(): Function {
-    return this.core.bootstrap;
+    return (clazz: any, requires?: any[]) => {
+      requires = requires || [];
+      requires.push(this._uuid);
+      const selector = clazz._toccataSelectorCache;
+      const element = document.querySelector(selector);
+      this.core.bootstrap(element, requires);
+    };
   }
 
   /**
@@ -113,9 +127,19 @@ export class Toccata {
         if (!decoratee._toccataDdoCache) {
           throw new Error('View annotation is required');
         }
+        decoratee._toccataSelectorCache = def.selector;
         decoratee._toccataDdoCache.restrict = 'E';
         decoratee._toccataDdoCache.controller = decoratee;
-        this.core.module(this.coreName).directive(def.selector, () => decoratee._toccataDdoCache);
+
+        // Initialize a module if cannot take it
+        try {
+          this.core.module(this._uuid);
+        } catch (e) {
+          this.core.module(this._uuid, []);
+        }
+
+        this.core.module(this._uuid)
+          .directive(def.selector, () => decoratee._toccataDdoCache);
         return decoratee;
       };
     };
