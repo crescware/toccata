@@ -1,6 +1,5 @@
 'use strict';
 var del = require('del');
-var espower = require('gulp-espower');
 var glob = require('glob');
 var gulp = require('gulp');
 var seq = require('run-sequence');
@@ -9,29 +8,34 @@ var mocha = require('gulp-mocha');
 
 var opt = {
   lib:           './lib',
+  npmbin:        './node_modules/.bin',
   src:           './src',
   test:          './test',
-  testEs5:       './test-es5',
   testEspowered: './test-espowered'
 };
 opt.e2e      = `${opt.test}/e2e`;
 opt.fixtures = `${opt.e2e}/fixtures`;
 opt.e2eUtils = `${opt.e2e}/utils`;
 
+var bin = {
+  tsc:        `${opt.npmbin}/tsc`,
+  babel:      `${opt.npmbin}/babel`,
+  browserify: `${opt.npmbin}/browserify`
+};
+
 /* clean */
 gulp.task('clean', del.bind(null, [
-  opt.src + '/**/*.js',
-  opt.src + '/**/*.js.map',
-  opt.test + '/unit/**/*.js',
-  opt.test + '/unit/**/*.js.map',
   opt.fixtures + '/**/*.js',
   opt.fixtures + '/**/*.js.map',
-  opt.testEs5,
+  opt.src      + '/**/*.js',
+  opt.src      + '/**/*.js.map',
+  opt.test     + '/unit/**/*.js',
+  opt.test     + '/unit/**/*.js.map',
   opt.testEspowered
 ]));
 
 /* ts */
-var tsc = 'tsc -t es5 -m commonjs --noImplicitAny';
+var tsc = `${bin.tsc} -t es5 -m commonjs --noImplicitAny --noEmitOnError`;
 gulp.task('ts:src_',      shell.task([`find ${opt.src}      -name *.ts | xargs ${tsc}`]));
 gulp.task('ts:fixtures_', shell.task([`find ${opt.fixtures} -name *.ts | xargs ${tsc}`]));
 gulp.task('ts:src',      function(done) {seq('clean', 'ts:src_',      done)});
@@ -39,7 +43,7 @@ gulp.task('ts:fixtures', function(done) {seq('clean', 'ts:fixtures_', done)});
 gulp.task('ts',          function(done) {seq('clean', ['ts:src_', 'ts:fixtures_'], done)});
 
 /* babel */
-gulp.task('babel:test', shell.task([`babel ${opt.test}/unit --out-dir ${opt.testEs5}/unit`]));
+gulp.task('babel:test', shell.task([`${bin.babel} ${opt.test}/unit --plugins espower --out-dir ${opt.testEspowered}/unit`]));
 
 /* browserify */
 gulp.task('watchify_',   shell.task([`watchify`]));
@@ -51,7 +55,7 @@ gulp.task('browserify', function(done) {seq('ts', 'babel', 'browserify_', done)}
 /* watch */
 gulp.task('watch:js', function(done) {seq('clean:bundle', ['ts:example_', 'ts:lib_'], ['babel:example', 'babel:lib'], done)});
 gulp.task('watch', ['watchify', 'watch:js'], function() {
-  gulp.watch([`${opt.example}/**/*.ts`, `${opt.lib}/**/*.ts`], ['watch:js']);
+  gulp.watch([`${opt.fixtures}/**/*.ts`, `${opt.lib}/**/*.ts`], ['watch:js']);
 });
 
 /* watch */
@@ -81,12 +85,6 @@ gulp.task('build:src', function(done) {seq(['clean:lib', 'ts:src'], 'copy:src', 
 gulp.task('build',     function(done) {seq('build:src', done)});
 
 /* test */
-gulp.task('espower', function() {
-  return gulp.src(`${opt.testEs5}/**/*.js`)
-    .pipe(espower())
-    .pipe(gulp.dest(opt.testEspowered));
-});
-
 function mochaTask(target) {
   return function() {
     return gulp.src(`${opt.testEspowered}/${target}/*.js`)
@@ -95,7 +93,7 @@ function mochaTask(target) {
 }
 gulp.task('mocha:unit', mochaTask('unit'));
 gulp.task('mocha:e2e',  mochaTask('e2e'));
-gulp.task('test', function(done) {seq('ts:src', 'babel:test', 'espower', 'mocha:unit', done)});
+gulp.task('test', function(done) {seq('ts:src', 'babel:test', 'mocha:unit', done)});
 
 /* e2e build */
 var target = [
@@ -126,7 +124,7 @@ gulp.task('e2e-ln', allE2eLn);
 
 var allE2eBrowserify = target.map(function(v) {
   var name = `e2e-browserify:${v}`;
-  gulp.task(name, shell.task([`browserify ${opt.test}/e2e/${v}/app.js -o ${opt.e2e}/${v}/bundle.js`]));
+  gulp.task(name, shell.task([`${bin.browserify} ${opt.test}/e2e/${v}/app.js -o ${opt.e2e}/${v}/bundle.js`]));
   return name;
 });
 gulp.task('e2e-browserify', allE2eBrowserify);
