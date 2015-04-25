@@ -20,6 +20,10 @@ export class Toccata {
   operatingMode: string;
   For: Function;
 
+  // @see http://git.io/vvS8W angular2/src/core/annotations/visibility.js
+  Ancestor: Function;
+  Parent: Function;
+
   private _uuid: string;
 
   /**
@@ -31,6 +35,8 @@ export class Toccata {
     this.bootstrap = this.bootstrapFactory();
     this.Component = this.ComponentFactory();
     this.View      = this.ViewFactory();
+    this.Ancestor  = this.AncestorFactory();
+    this.Parent    = this.ParentFactory();
 
     if (this.operatingMode === 'v2') {
       this.For = this.core.For || console.warn('angular2.For not found');
@@ -175,11 +181,80 @@ export class Toccata {
   private ViewFactoryForV1(): Decoratable {
     return (def: any) => {
       const ddo = {
-        template: def.template
+        template: def.template,
+        templateUrl: def.templateUrl
       };
 
       return (decoratee: any) => {
         decoratee._toccataDdoCache = ddo;
+        return decoratee;
+      };
+    };
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private ParentFactory(): Decoratable {
+    return (this.operatingMode === 'v2')
+      ? this.ParentFactoryForV2()
+      : this.ParentFactoryForV1();
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private ParentFactoryForV2(): Decoratable {
+    const Parent = (def: any) => {
+      return (decoratee: any) => {
+        return new this.core.Parent(decoratee);
+      };
+    };
+    return Parent;
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private ParentFactoryForV1(): Decoratable {
+    return (def: any) => {
+      // noop
+      return (decoratee: any) => {
+        // noop
+        return decoratee;
+      };
+    };
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private AncestorFactory(): Decoratable {
+    return (this.operatingMode === 'v2')
+      ? this.AncestorFactoryForV2()
+      : this.AncestorFactoryForV1();
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private AncestorFactoryForV2(): Decoratable {
+    const Ancestor = (def: any) => {
+      return (decoratee: any) => {
+        return new this.core.Ancestor(decoratee);
+      };
+    };
+    return Ancestor;
+  }
+
+  /**
+   * @returns {Decoratable}
+   */
+  private AncestorFactoryForV1(): Decoratable {
+    return (def: any) => {
+      // noop
+      return (decoratee: any) => {
+        // noop
         return decoratee;
       };
     };

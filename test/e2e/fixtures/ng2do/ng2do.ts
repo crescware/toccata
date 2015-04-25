@@ -6,9 +6,7 @@ import {Toccata, default as toccata_} from '../../../../src/toccata';
 let toccata: Toccata = toccata_(angular);
 import {TodoStore} from './todo-store';
 
-let {Component, View, bootstrap, For} = toccata;
-
-toccata.initModule('toccataFixtures', []);
+let {Component, View, bootstrap, For, Parent} = toccata;
 
 @Component({
   selector: 'todo-app',
@@ -25,7 +23,8 @@ class TodoApp {
   todoEdit: any;
   todos: Array<any>;
 
-  constructor(store: TodoStore) {
+  constructor(store: TodoStore, @Parent() wrapper: WrapperApp) {
+    console.log(wrapper);
     this.todoStore = store;
     this.todoEdit = null;
     this.todos = store.list;
@@ -81,4 +80,18 @@ class TodoApp {
 
 }
 
-bootstrap(TodoApp);
+@Component({
+  selector: 'wrapper-app'
+})
+@View({
+  template: '<todo-app></todo-app>',
+  directives: [TodoApp]
+})
+class WrapperApp {
+  foo: string;
+  constructor() {
+    this.foo = 'bar!';
+  }
+}
+
+bootstrap(WrapperApp);

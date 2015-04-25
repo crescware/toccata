@@ -11,5 +11,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-import './component/selector';
+//import './component/selector';
 import './ng2do/ng2do';
+//import './view/template-url';

@@ -7,8 +7,8 @@
     "e2e": "gulp e2e",
     "test": "gulp test",
     "watch": "gulp watch",
-    "1-4": "cd ./test/e2e/1-4-latest && ss --port 8080",
-    "2-0": "cd ./test/e2e/2-0-0-alpha-19 && ss --port 8080"
+    "1-4": "cd ./test/e2e/1-4-latest && ss --port 1400",
+    "2-0": "cd ./test/e2e/2-0-0-alpha-19 && ss --port 2000"
   },
   "repository": {
     "type": "git",

@@ -8,10 +8,10 @@ let toccata: Toccata = toccata_(angular);
 let {Component, View, bootstrap} = toccata;
 
 @Component({
-  selector: 'hello'
+  selector: 'templateurl'
 })
 @View({
-  template: `<p>Hello!</p>`
+  templateUrl: './template.html'
 })
 class HelloController {
   constructor() {
