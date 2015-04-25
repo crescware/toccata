@@ -26,6 +26,10 @@ var _mocha = require('gulp-mocha');
 
 var _mocha2 = _interopRequireWildcard(_mocha);
 
+var _path = require('path');
+
+var _path2 = _interopRequireWildcard(_path);
+
 var opt = {
   lib: './lib',
   npmbin: './node_modules/.bin',
@@ -139,28 +143,41 @@ var target = ['1-3-14', '1-3-latest', '1-4-latest', '2-0-0-alpha-20'];
 /* e2e cp */
 var allE2eCp = target.map(function (v) {
   var taskName = 'e2e-cp:' + v;
-  var filePath = v.slice(0, 1) === '2' ? 'angular' : 'angular2';
-  var fileName = filePath === 'angular' ? 'index' : 'angular2';
-  _gulp2['default'].task(taskName, _shell2['default'].task(['\n    cp ' + opt.e2eUtils + '/dummy.js ' + opt.e2e + '/' + v + '/node_modules/' + filePath + ' &&\n    mv ' + opt.e2e + '/' + v + '/node_modules/' + filePath + '/dummy.js ' + opt.e2e + '/' + v + '/node_modules/' + filePath + '/' + fileName + '.js\n  ']));
+  // For the passage of the build, the other versions Angular it is necessary to dummy
+  var dummyDest = v.slice(0, 1) === '2' /* if angular 2 */ ? 'angular' : 'angular2';
+  var dummyPath = '' + opt.e2e + '/' + v + '/node_modules/' + dummyDest;
+  var original = 'dummy.js';
+  var dummyName = dummyDest === 'angular' ? 'index.js' : 'angular2.js';
+  _gulp2['default'].task(taskName, _shell2['default'].task(['\n    cp ' + opt.e2eUtils + '/' + original + ' ' + dummyPath + ' &&\n    mv ' + dummyPath + '/' + original + ' ' + dummyPath + '/' + dummyName + '\n  ']));
   return taskName;
 });
 _gulp2['default'].task('e2e-cp', allE2eCp);
 
 /* e2e ln */
 var allE2eLn = target.map(function (v) {
-  var name = 'e2e-ln:' + v;
-  _gulp2['default'].task(name, _shell2['default'].task(['lndir $PWD/' + opt.fixtures + ' ' + opt.e2e + '/' + v]));
-  return name;
+  var taskName = 'e2e-ln:' + v;
+  // Create a link to all of the directory
+  _gulp2['default'].task(taskName, _shell2['default'].task(['lndir $PWD/' + opt.fixtures + ' ' + opt.e2e + '/' + v]));
+  return taskName;
 });
 _gulp2['default'].task('e2e-ln', allE2eLn);
 
 /* e2e browserify */
 var allE2eBrowserify = target.map(function (v) {
-  var name = 'e2e-browserify:' + v;
-  _gulp2['default'].task(name, _shell2['default'].task(['' + bin.browserify + ' ' + opt.test + '/e2e/' + v + '/app.js -o ' + opt.e2e + '/' + v + '/bundle.js']));
-  return name;
+  // The fixturesEntryPaths root is ./test/e2e/fixtures/
+  var fixturesEntryPaths = ['component/selector.js', 'ng2do/ng2do.js', 'view/template-url.js'];
+
+  var taskNameOfEachVer = fixturesEntryPaths.map(function (entry) {
+    var bundleName = _path2['default'].basename(entry, '.js');
+    var taskName = 'e2e-browserify:' + v + ':' + entry;
+    _gulp2['default'].task(taskName, _shell2['default'].task(['' + bin.browserify + ' ' + opt.test + '/e2e/' + v + '/' + entry + ' -o ' + opt.e2e + '/' + v + '/bundle-' + bundleName + '.js']));
+    return taskName;
+  });
+
+  return taskNameOfEachVer;
 });
-_gulp2['default'].task('e2e-browserify', allE2eBrowserify);
+// allE2eBrowserify needs flatten
+_gulp2['default'].task('e2e-browserify', Array.prototype.concat.apply([], allE2eBrowserify));
 
 /* e2e clean */
 _gulp2['default'].task('clean:e2e', _del2['default'].bind(null, target.map(function (v) {

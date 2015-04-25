@@ -1,5 +1,5 @@
+/// <reference path="../../../typings/node/node.d.ts" />
 'use strict';
-import './app';
 
 const angular = (() => {
   const pkg: any = require('angular');

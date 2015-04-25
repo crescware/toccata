@@ -5,6 +5,7 @@ import gulp from 'gulp';
 import seq from 'run-sequence';
 import shell from 'gulp-shell';
 import mocha from 'gulp-mocha';
+import path from 'path';
 
 const opt = {
   lib:           './lib',
@@ -103,14 +104,24 @@ const target = [
   '2-0-0-alpha-20'
 ];
 
+// The fixturesEntryPaths root is ./test/e2e/fixtures/
+const fixturesEntryPaths = [
+  'component/selector.js',
+  'ng2do/ng2do.js',
+  'view/template-url.js'
+];
+
 /* e2e cp */
 const allE2eCp = target.map((v) => {
   const taskName = `e2e-cp:${v}`;
-  const filePath = (v.slice(0, 1) === '2') ? 'angular' : 'angular2';
-  const fileName = (filePath === 'angular') ? 'index' : 'angular2';
+  // For the passage of the build, the other versions Angular it is necessary to dummy
+  const dummyDest = (v.slice(0, 1) === '2' /* if angular 2 */) ? 'angular' : 'angular2';
+  const dummyPath = `${opt.e2e}/${v}/node_modules/${dummyDest}`;
+  const original  = 'dummy.js';
+  const dummyName = (dummyDest === 'angular') ? 'index.js' : 'angular2.js';
   gulp.task(taskName, shell.task([`
-    cp ${opt.e2eUtils}/dummy.js ${opt.e2e}/${v}/node_modules/${filePath} &&
-    mv ${opt.e2e}/${v}/node_modules/${filePath}/dummy.js ${opt.e2e}/${v}/node_modules/${filePath}/${fileName}.js
+    cp ${opt.e2eUtils}/${original} ${dummyPath} &&
+    mv ${dummyPath}/${original} ${dummyPath}/${dummyName}
   `]));
   return taskName;
 });
@@ -118,19 +129,30 @@ gulp.task('e2e-cp', allE2eCp);
 
 /* e2e ln */
 const allE2eLn = target.map((v) => {
-  const name = `e2e-ln:${v}`;
-  gulp.task(name, shell.task([`lndir $PWD/${opt.fixtures} ${opt.e2e}/${v}`]));
-  return name;
+  const taskName = `e2e-ln:${v}`;
+  // Create a link to all of the directory
+  gulp.task(taskName, shell.task([
+    `lndir $PWD/${opt.fixtures} ${opt.e2e}/${v}`
+  ]));
+  return taskName;
 });
 gulp.task('e2e-ln', allE2eLn);
 
 /* e2e browserify */
 const allE2eBrowserify = target.map((v) => {
-  const name = `e2e-browserify:${v}`;
-  gulp.task(name, shell.task([`${bin.browserify} ${opt.test}/e2e/${v}/app.js -o ${opt.e2e}/${v}/bundle.js`]));
-  return name;
+  const taskNameOfEachVer = fixturesEntryPaths.map((entry) => {
+    const bundleName = path.basename(entry, '.js');
+    const taskName = `e2e-browserify:${v}:${entry}`;
+    gulp.task(taskName, shell.task([
+      `${bin.browserify} ${opt.test}/e2e/${v}/${entry} -o ${opt.e2e}/${v}/bundle-${bundleName}.js`
+    ]));
+    return taskName;
+  });
+
+  return taskNameOfEachVer;
 });
-gulp.task('e2e-browserify', allE2eBrowserify);
+// allE2eBrowserify needs flatten
+gulp.task('e2e-browserify', Array.prototype.concat.apply([], allE2eBrowserify));
 
 /* e2e clean */
 gulp.task('clean:e2e', del.bind(null, target.map((v) => {
