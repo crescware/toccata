@@ -1,11 +1,10 @@
 'use strict';
 import 'babel-core/polyfill';
-
 import angular from '../take-angular';
 import {Toccata, default as toccata_} from '../../../../src/toccata';
-let toccata: Toccata = toccata_(angular);
 
-let {Component, View, bootstrap} = toccata;
+const toccata: Toccata = toccata_(angular);
+const {Component, View, bootstrap} = toccata;
 
 @Component({
   selector: 'hello'

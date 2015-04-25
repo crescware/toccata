@@ -1,8 +1,8 @@
 'use strict';
 import './app';
 
-var angular = (() => {
-  var pkg: any = require('angular');
+const angular = (() => {
+  const pkg: any = require('angular');
   return (pkg === 'dummy')
     ? require('angular2/angular2')
     : pkg;

@@ -1,12 +1,11 @@
 'use strict';
 import 'babel-core/polyfill';
-
 import angular from '../take-angular';
 import {Toccata, default as toccata_} from '../../../../src/toccata';
-let toccata: Toccata = toccata_(angular);
 import {TodoStore} from './todo-store';
 
-let {Component, View, bootstrap, For, Parent} = toccata;
+const toccata: Toccata = toccata_(angular);
+const {Component, View, bootstrap, For, Parent} = toccata;
 
 @Component({
   selector: 'todo-app',
@@ -29,15 +28,18 @@ class TodoApp {
     this.todoEdit = null;
     this.todos = store.list;
   }
+
   enterTodo($event: any, newTodo: any) {
     if($event.which === 13) { // ENTER_KEY
       this.addTodo(newTodo.value);
       newTodo.value = '';
     }
   }
+
   editTodo($event: any, todo: any) {
     this.todoEdit = todo;
   }
+
   doneEditing($event: any, todo: any) {
     var which = $event.which;
     var target = $event.target;
@@ -50,19 +52,23 @@ class TodoApp {
       target.value = todo.title;
     }
   }
+
   addTodo(newTitle: any) {
     this.todoStore.add({
       title: newTitle,
       completed: false
     });
   }
+
   completeMe(todo: any) {
     todo.completed = !todo.completed;
     this.todoStore.save(todo);
   }
+
   deleteMe(todo: any) {
     this.todoStore.remove(todo);
   }
+
   toggleAll($event: any) {
     var isComplete = $event.target.checked;
     this.todoStore.list.forEach((todo: any) => {
@@ -70,6 +76,7 @@ class TodoApp {
       this.todoStore.save(todo);
     });
   }
+
   clearCompleted() {
     [].concat(this.todoStore.list).forEach((todo) => {
       if(todo.completed) {
@@ -77,7 +84,6 @@ class TodoApp {
       }
     });
   }
-
 }
 
 @Component({
@@ -89,6 +95,7 @@ class TodoApp {
 })
 class WrapperApp {
   foo: string;
+
   constructor() {
     this.foo = 'bar!';
   }
