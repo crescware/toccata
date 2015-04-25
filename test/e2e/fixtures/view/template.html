@@ -1,1 +1,23 @@
+<h1>Angular 2</h1>
 <p>Succeed template loading</p>
+<p>{{value}}</p>
+<button (click)="increment()">Increment</button>
+
+<div>
+  <p>Name: {{firstName.value}}</p>
+  <input type="text" #first-name (keyup)>
+  <p>Name: {{lastName.value}}</p>
+  <input type="text" #last-name (keyup)>
+</div>
+
+<h1>AngularJS 1</h1>
+<p>Succeed template loading</p>
+<p>{{TestController.value}}</p>
+<button ng-click="TestController.increment()">Increment</button>
+
+<div>
+  <p>Name: {{ngModel.firstName}}</p>
+  <input type="text" ng-model="ngModel.firstName">
+  <p>Name: {{ngModel.lastName}}</p>
+  <input type="text" ng-model="ngModel.lastName">
+</div>

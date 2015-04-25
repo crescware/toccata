@@ -136,6 +136,7 @@ export class Toccata {
         decoratee._toccataSelectorCache = def.selector;
         decoratee._toccataDdoCache.restrict = 'E';
         decoratee._toccataDdoCache.controller = decoratee;
+        decoratee._toccataDdoCache.controllerAs = decoratee.name || 'Controller';
 
         // Initialize a module if cannot take it
         try {

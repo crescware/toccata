@@ -14,10 +14,16 @@ displayMode(toccata);
 @View({
   templateUrl: './template.html'
 })
-class HelloController {
+class TestController {
+  value: number;
+
   constructor() {
-    // noop
+    this.value = 0;
+  }
+
+  increment() {
+    this.value++;
   }
 }
 
-bootstrap(HelloController);
+bootstrap(TestController);
