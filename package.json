@@ -8,7 +8,7 @@
     "test": "gulp test",
     "watch": "gulp watch",
     "1-4": "cd ./test/e2e/1-4-latest && ss --port 1400",
-    "2-0": "cd ./test/e2e/2-0-0-alpha-19 && ss --port 2000"
+    "2-0": "cd ./test/e2e/2-0-0-alpha-20 && ss --port 2000"
   },
   "repository": {
     "type": "git",
@@ -27,18 +27,18 @@
   },
   "homepage": "https://github.com/crescware/toccata",
   "devDependencies": {
-    "babel": "^5.1.9",
-    "babel-core": "^5.1.10",
+    "babel": "^5.1.11",
+    "babel-core": "^5.1.11",
+    "babel-plugin-espower": "^0.2.1",
     "browserify": "^9.0.8",
     "del": "^1.1.1",
     "dtsm": "^0.9.1",
     "glob": "^5.0.5",
     "gulp": "^3.8.11",
-    "gulp-espower": "^0.10.1",
     "gulp-shell": "^0.4.0",
     "licensify": "^1.1.0",
     "mocha": "^2.2.4",
-    "power-assert": "^0.10.2",
+    "power-assert": "^0.11.0",
     "run-sequence": "^1.0.2",
     "superstatic": "^2.2.0",
     "testium": "^2.6.0",
