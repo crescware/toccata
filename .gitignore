@@ -11,16 +11,16 @@ coverage/
 typings/
 
 # for test
-test-es5/
 test-espowered/
 test/e2e/**/
+!test/e2e/utils/
+!test/e2e/utils/**/
 !test/e2e/fixtures/
 !test/e2e/fixtures/**/
 
 # TypeScript
 *.js
 *.js.map
-
 !gulpfile.js
 !index.js
-!dist/*
+!test/e2e/utils/dummy.js
