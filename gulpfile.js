@@ -66,8 +66,11 @@ _gulp2['default'].task('ts', function (done) {
 });
 
 /* babel */
-var babel = '' + bin.babel + ' ' + opt.test + '/unit --plugins espower --out-dir ' + opt.testEspowered + '/unit';
-_gulp2['default'].task('babel:test', _shell2['default'].task([babel]));
+function babelForTest(target) {
+  return '' + bin.babel + ' ' + opt.test + '/' + target + ' --plugins espower --out-dir ' + opt.testEspowered + '/' + target;
+}
+_gulp2['default'].task('babel:unit', _shell2['default'].task([babelForTest('unit')]));
+_gulp2['default'].task('babel:e2e', _shell2['default'].task([babelForTest('e2e/specs')]));
 
 /* browserify */
 _gulp2['default'].task('watchify_', _shell2['default'].task(['watchify']));
@@ -129,13 +132,15 @@ _gulp2['default'].task('build', function (done) {
 /* test */
 function mochaTask(target) {
   return function () {
-    return _gulp2['default'].src('' + opt.testEspowered + '/' + target + '/*.js').pipe(_mocha2['default']({ reporter: 'spec' }));
+    return _gulp2['default'].src('' + opt.testEspowered + '/' + target + '/*.js').pipe(_mocha2['default']({ reporter: 'spec' })).on('error', function (err) {
+      return process.exit(1);
+    });
   };
 }
 _gulp2['default'].task('mocha:unit', mochaTask('unit'));
-_gulp2['default'].task('mocha:e2e', mochaTask('e2e'));
+_gulp2['default'].task('mocha:e2e', mochaTask('e2e/specs'));
 _gulp2['default'].task('test', function (done) {
-  return _seq2['default']('ts:src', 'babel:test', 'mocha:unit', done);
+  return _seq2['default']('ts:src', 'babel:unit', 'mocha:unit', done);
 });
 
 /* e2e build */
@@ -248,5 +253,5 @@ _gulp2['default'].task('build:fixtures', function (done) {
   return _seq2['default']('clean:e2e', 'ts:fixtures', ['e2e-cp', 'e2e-ln'], 'e2e-browserify', done);
 });
 _gulp2['default'].task('e2e', function (done) {
-  return _seq2['default']('build:fixtures', 'mocha:e2e', done);
+  return _seq2['default'](['build:fixtures', 'babel:e2e'], 'mocha:e2e', done);
 });

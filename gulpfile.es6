@@ -47,8 +47,11 @@ gulp.task('ts:fixtures', (done) => seq('clean', 'ts:fixtures_', done));
 gulp.task('ts',          (done) => seq('clean', ['ts:src_', 'ts:fixtures_'], done));
 
 /* babel */
-const babel = `${bin.babel} ${opt.test}/unit --plugins espower --out-dir ${opt.testEspowered}/unit`;
-gulp.task('babel:test', shell.task([babel]));
+function babelForTest(target) {
+  return `${bin.babel} ${opt.test}/${target} --plugins espower --out-dir ${opt.testEspowered}/${target}`;
+}
+gulp.task('babel:unit', shell.task([babelForTest('unit')]));
+gulp.task('babel:e2e',  shell.task([babelForTest('e2e/specs')]));
 
 /* browserify */
 gulp.task('watchify_',   shell.task([`watchify`]));
@@ -92,12 +95,13 @@ function mochaTask(target) {
   return () => {
     return gulp
       .src(`${opt.testEspowered}/${target}/*.js`)
-      .pipe(mocha({reporter: 'spec'}));
+      .pipe(mocha({reporter: 'spec'}))
+      .on('error', (err) => process.exit(1));
   };
 }
 gulp.task('mocha:unit', mochaTask('unit'));
-gulp.task('mocha:e2e',  mochaTask('e2e'));
-gulp.task('test', (done) => seq('ts:src', 'babel:test', 'mocha:unit', done));
+gulp.task('mocha:e2e',  mochaTask('e2e/specs'));
+gulp.task('test', (done) => seq('ts:src', 'babel:unit', 'mocha:unit', done));
 
 /* e2e build */
 const angularVersion = {
@@ -236,4 +240,4 @@ gulp.task('clean:e2e', del.bind(null, target.map((v) => {
 
 gulp.task('e2e:init', (done) => seq('clean:init-e2e', 'e2e-mkdir', ['e2e-install-angular', 'e2e-zone-js'], 'e2e-install-angular-after', done));
 gulp.task('build:fixtures', (done) => seq('clean:e2e', 'ts:fixtures', ['e2e-cp', 'e2e-ln'], 'e2e-browserify', done));
-gulp.task('e2e', (done) => seq('build:fixtures', 'mocha:e2e', done));
+gulp.task('e2e', (done) => seq(['build:fixtures', 'babel:e2e'], 'mocha:e2e', done));
