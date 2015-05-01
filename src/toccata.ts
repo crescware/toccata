@@ -43,10 +43,10 @@ export class Toccata implements ToccataProps {
     this.Parent   = this.ParentFactory();
     */
 
-    if (this.operatingMode === 'v2') {
+    if (this.isV2()) {
       this.For = this.core.For || console.warn('angular2.For not found');
     }
-    if (this.operatingMode === 'v1') {
+    if (this.isV1()) {
       this._uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
@@ -62,18 +62,31 @@ export class Toccata implements ToccataProps {
    * @param {Array<string>} requires
    */
   initModule(moduleName: string, requires: string[]) {
-    if (this.operatingMode === 'v2') {
-      return;
-    }
+    if (this.isV2()) {return}
+
     this.core.module(moduleName, requires);
     this.coreName = moduleName;
   }
 
   /**
+   * @returns {boolean}
+   */
+  isV1(): boolean {
+    return this.operatingMode === 'v1';
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  isV2(): boolean {
+    return this.operatingMode === 'v2';
+  }
+  
+  /**
    * @returns {Function}
    */
   private bootstrapFactory(): Function {
-    return (this.operatingMode === 'v2')
+    return (this.isV2())
       ? V2.prototype._bootstrapFactory.call(this)
       : V1.prototype._bootstrapFactory.call(this);
   }
@@ -82,7 +95,7 @@ export class Toccata implements ToccataProps {
    * @returns {Decoratable}
    */
   private ComponentFactory(): Decoratable {
-    return (this.operatingMode === 'v2')
+    return (this.isV2())
       ? V2.prototype._ComponentFactory.call(this)
       : V1.prototype._ComponentFactory.call(this);
   }
@@ -91,7 +104,7 @@ export class Toccata implements ToccataProps {
    * @returns {Decoratable}
    */
   private ViewFactory(): Decoratable {
-    return (this.operatingMode === 'v2')
+    return (this.isV2())
       ? V2.prototype._ViewFactory.call(this)
       : V1.prototype._ViewFactory.call(this);
   }
@@ -100,7 +113,7 @@ export class Toccata implements ToccataProps {
    * @returns {Decoratable}
    */
   private ParentFactory(): Decoratable {
-    return (this.operatingMode === 'v2')
+    return (this.isV2())
       ? V2.prototype._ParentFactory.call(this)
       : V1.prototype._ParentFactory.call(this);
   }
@@ -109,7 +122,7 @@ export class Toccata implements ToccataProps {
    * @returns {Decoratable}
    */
   private AncestorFactory(): Decoratable {
-    return (this.operatingMode === 'v2')
+    return (this.isV2())
       ? V2.prototype._AncestorFactory.call(this)
       : V1.prototype._AncestorFactory.call(this);
   }
