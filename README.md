@@ -5,7 +5,7 @@
 Migrating to Angular 2 is our concern. We make it possible to perform the migration in stages, we propose The Cresc Toccata [krəs təkάːṭə], call me "Toccata". This is currently aware of TypeScript because of it uses the @Decorators syntax a lot. Also we're going to focus even for use in Babel.
 
 ## Usage
-In TypeScript or ES6 syntax.
+In TypeScript or Babel (ES7 stage 1) syntax.
 
 ```js
 import {toccata as toccata_} from 'toccata';
