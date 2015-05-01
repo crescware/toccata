@@ -1,3 +1,6 @@
+/**
+ * This fixture tests about @Component.selector, @View.templateUrl, bootstrap()
+ */
 'use strict';
 import 'babel-core/polyfill';
 import angular from '../take-angular';
