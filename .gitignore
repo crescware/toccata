@@ -21,7 +21,6 @@ test/e2e/**/
 *.js
 *.js.map
 
-
 !gulpfile.js
 !index.js
 !dist/*
