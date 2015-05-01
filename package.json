@@ -36,7 +36,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://armorik83@github.com/crescware/toccata.git"
+    "url": "https://github.com/crescware/toccata.git"
   },
   "scripts": {
     "1-4": "cd ./test/e2e/1-4-latest     && ss --port 1400 --debug true",
