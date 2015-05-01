@@ -101,7 +101,7 @@ const target = [
   '1-3-14',
   '1-3-latest',
   '1-4-latest',
-  '2-0-0-alpha-20'
+  '2-0-0-alpha-21'
 ];
 
 // The fixturesEntryPaths root is ./test/e2e/fixtures/

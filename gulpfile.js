@@ -138,7 +138,10 @@ _gulp2['default'].task('test', function (done) {
 });
 
 /* e2e build */
-var target = ['1-3-14', '1-3-latest', '1-4-latest', '2-0-0-alpha-20'];
+var target = ['1-3-14', '1-3-latest', '1-4-latest', '2-0-0-alpha-21'];
+
+// The fixturesEntryPaths root is ./test/e2e/fixtures/
+var fixturesEntryPaths = ['component/selector.js', 'ng2do/ng2do.js', 'view/template-url.js'];
 
 /* e2e cp */
 var allE2eCp = target.map(function (v) {
@@ -164,9 +167,6 @@ _gulp2['default'].task('e2e-ln', allE2eLn);
 
 /* e2e browserify */
 var allE2eBrowserify = target.map(function (v) {
-  // The fixturesEntryPaths root is ./test/e2e/fixtures/
-  var fixturesEntryPaths = ['component/selector.js', 'ng2do/ng2do.js', 'view/template-url.js'];
-
   var taskNameOfEachVer = fixturesEntryPaths.map(function (entry) {
     var bundleName = _path2['default'].basename(entry, '.js');
     var taskName = 'e2e-browserify:' + v + ':' + entry;
