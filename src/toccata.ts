@@ -4,14 +4,15 @@
  */
 'use strict';
 import operatingMode from './operating-mode';
-
-type Decoratable = (def: any) => (decoratee: any) => any;
+import {ToccataProps, Decoratable} from './toccata-props';
+import V1 from './v1/v1';
+import V2 from './v2/v2';
 
 export default function toccata(angular: any): Toccata {
   return new Toccata(angular);
 }
 
-export class Toccata {
+export class Toccata implements ToccataProps {
   bootstrap: Function;
   Component: Decoratable;
   View: Decoratable;
@@ -24,7 +25,7 @@ export class Toccata {
   Ancestor: Function;
   Parent: Function;
 
-  private _uuid: string;
+  _uuid: string;
 
   /**
    * @constructor
@@ -35,8 +36,12 @@ export class Toccata {
     this.bootstrap = this.bootstrapFactory();
     this.Component = this.ComponentFactory();
     this.View      = this.ViewFactory();
-    this.Ancestor  = this.AncestorFactory();
-    this.Parent    = this.ParentFactory();
+
+    // WIP, not working
+    /*
+    this.Ancestor = this.AncestorFactory();
+    this.Parent   = this.ParentFactory();
+    */
 
     if (this.operatingMode === 'v2') {
       this.For = this.core.For || console.warn('angular2.For not found');
@@ -51,6 +56,7 @@ export class Toccata {
 
   /**
    * AngularJS 1.x angular.module('name', ['requires'])
+   * NOTICE: We have plans to rename initModule() to a something better name
    *
    * @param {string} moduleName
    * @param {Array<string>} requires
@@ -68,33 +74,8 @@ export class Toccata {
    */
   private bootstrapFactory(): Function {
     return (this.operatingMode === 'v2')
-      ? this.bootstrapFactoryForV2()
-      : this.bootstrapFactoryForV1();
-  }
-
-  /**
-   * Return Angular 2 bootstrap()
-   *
-   * @returns {function(*, ?*=, ?Function=): void}
-   */
-  private bootstrapFactoryForV2(): (appComponentType: any, componentInjectableBindings?: any, errorReporter?: Function) => void {
-    return this.core.bootstrap;
-  }
-
-  /**
-   * Return AngularJS 1.x bootstrap()
-   * If you are already doing Toccata#initModule(), it is not nothing
-   *
-   * @returns {Function}
-   */
-  private bootstrapFactoryForV1(): Function {
-    return (clazz: any, requires?: any[]) => {
-      requires = requires || [];
-      requires.push(this._uuid);
-      const selector = clazz._toccataSelectorCache;
-      const element = document.querySelector(selector);
-      this.core.bootstrap(element, requires);
-    };
+      ? V2.prototype._bootstrapFactory.call(this)
+      : V1.prototype._bootstrapFactory.call(this);
   }
 
   /**
@@ -102,54 +83,8 @@ export class Toccata {
    */
   private ComponentFactory(): Decoratable {
     return (this.operatingMode === 'v2')
-      ? this.ComponentFactoryForV2()
-      : this.ComponentFactoryForV1();
-  }
-
-  /**
-   * @returns {Decoratable}
-   */
-  private ComponentFactoryForV2(): Decoratable {
-    const Component = (def: any) => {
-      var annotation = new this.core.Component(def);
-      return function(decoratee: any) {
-        decoratee.annotations = decoratee.annotations || [];
-        if (def.injectables) {
-          decoratee.parameters = decoratee.parameters || [def.injectables];
-        }
-        decoratee.annotations.push(annotation);
-        return decoratee;
-      };
-    };
-    return Component;
-  }
-
-  /**
-   * @returns {Decoratable}
-   */
-  private ComponentFactoryForV1(): Decoratable {
-    return (def: any) => {
-      return (decoratee: any) => {
-        if (!decoratee._toccataDdoCache) {
-          throw new Error('View annotation is required');
-        }
-        decoratee._toccataSelectorCache = def.selector;
-        decoratee._toccataDdoCache.restrict = 'E';
-        decoratee._toccataDdoCache.controller = decoratee;
-        decoratee._toccataDdoCache.controllerAs = decoratee.name || 'Controller';
-
-        // Initialize a module if cannot take it
-        try {
-          this.core.module(this._uuid);
-        } catch (e) {
-          this.core.module(this._uuid, []);
-        }
-
-        this.core.module(this._uuid)
-          .directive(def.selector, () => decoratee._toccataDdoCache);
-        return decoratee;
-      };
-    };
+      ? V2.prototype._ComponentFactory.call(this)
+      : V1.prototype._ComponentFactory.call(this);
   }
 
   /**
@@ -157,40 +92,8 @@ export class Toccata {
    */
   private ViewFactory(): Decoratable {
     return (this.operatingMode === 'v2')
-      ? this.ViewFactoryForV2()
-      : this.ViewFactoryForV1();
-  }
-
-  /**
-   * @returns {Decoratable}
-   */
-  private ViewFactoryForV2(): Decoratable {
-    const View = (def: any) => {
-      var annotation = new this.core.View(def);
-      return function(decoratee: any) {
-        decoratee.annotations = decoratee.annotations || [];
-        decoratee.annotations.push(annotation);
-        return decoratee;
-      };
-    };
-    return View;
-  }
-
-  /**
-   * @returns {Decoratable}
-   */
-  private ViewFactoryForV1(): Decoratable {
-    return (def: any) => {
-      const ddo = {
-        template: def.template,
-        templateUrl: def.templateUrl
-      };
-
-      return (decoratee: any) => {
-        decoratee._toccataDdoCache = ddo;
-        return decoratee;
-      };
-    };
+      ? V2.prototype._ViewFactory.call(this)
+      : V1.prototype._ViewFactory.call(this);
   }
 
   /**
@@ -198,33 +101,8 @@ export class Toccata {
    */
   private ParentFactory(): Decoratable {
     return (this.operatingMode === 'v2')
-      ? this.ParentFactoryForV2()
-      : this.ParentFactoryForV1();
-  }
-
-  /**
-   * @returns {Decoratable}
-   */
-  private ParentFactoryForV2(): Decoratable {
-    const Parent = (def: any) => {
-      return (decoratee: any) => {
-        return new this.core.Parent(decoratee);
-      };
-    };
-    return Parent;
-  }
-
-  /**
-   * @returns {Decoratable}
-   */
-  private ParentFactoryForV1(): Decoratable {
-    return (def: any) => {
-      // noop
-      return (decoratee: any) => {
-        // noop
-        return decoratee;
-      };
-    };
+      ? V2.prototype._ParentFactory.call(this)
+      : V1.prototype._ParentFactory.call(this);
   }
 
   /**
@@ -232,32 +110,7 @@ export class Toccata {
    */
   private AncestorFactory(): Decoratable {
     return (this.operatingMode === 'v2')
-      ? this.AncestorFactoryForV2()
-      : this.AncestorFactoryForV1();
-  }
-
-  /**
-   * @returns {Decoratable}
-   */
-  private AncestorFactoryForV2(): Decoratable {
-    const Ancestor = (def: any) => {
-      return (decoratee: any) => {
-        return new this.core.Ancestor(decoratee);
-      };
-    };
-    return Ancestor;
-  }
-
-  /**
-   * @returns {Decoratable}
-   */
-  private AncestorFactoryForV1(): Decoratable {
-    return (def: any) => {
-      // noop
-      return (decoratee: any) => {
-        // noop
-        return decoratee;
-      };
-    };
+      ? V2.prototype._AncestorFactory.call(this)
+      : V1.prototype._AncestorFactory.call(this);
   }
 }
