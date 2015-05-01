@@ -2,15 +2,24 @@
  * Cresc Toccata
  * @copyright © 2015 Crescware
  */
+/// <reference path="../typings/node/node.d.ts" />
 'use strict';
 import operatingMode from './operating-mode';
 import {ToccataProps, Decoratable} from './toccata-props';
 import V1 from './v1/v1';
 import V2 from './v2/v2';
 
-export default function toccata(angular: any): Toccata {
+const pkg = require('../package.json');
+
+interface ToccataStatic {
+  (angular: any): Toccata;
+  version: string;
+}
+
+export function toccata(angular: any): Toccata {
   return new Toccata(angular);
 }
+(<ToccataStatic>toccata).version = pkg.version;
 
 export class Toccata implements ToccataProps {
   bootstrap: Function;

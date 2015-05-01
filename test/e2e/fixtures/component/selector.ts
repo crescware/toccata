@@ -5,7 +5,7 @@
 import 'babel-core/polyfill';
 import angular from '../take-angular';
 import displayMode from '../display-mode';
-import {Toccata, default as toccata_} from '../../../../src/toccata';
+import {Toccata, toccata as toccata_} from '../../../../src/toccata';
 
 const toccata: Toccata = toccata_(angular);
 const {Component, View, bootstrap} = toccata;
