@@ -18,7 +18,6 @@ const toccata = toccata_(angular);
 // const toccata = toccata_(angular2);
 
 const {Component, View, bootstrap} = toccata;
-displayMode(toccata);
 
 // The syntax such as Angular 2 in AngularJS 1.x
 @Component({
