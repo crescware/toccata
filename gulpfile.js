@@ -139,16 +139,69 @@ _gulp2['default'].task('test', function (done) {
 });
 
 /* e2e build */
-var target = ['1-3-14', '1-3-latest', '1-4-latest', '2-0-0-alpha-21'];
+var angularVersion = {
+  '1-3-14': 'angular@1.3.14',
+  '1-3-latest': 'angular@1.3.15',
+  '1-4-latest': 'angular@1.4.0-rc.1',
+  '2-0-0-alpha-21': 'angular2@2.0.0-alpha.21'
+};
+var target = Object.keys(angularVersion);
 
 // The fixturesEntryPaths root is ./test/e2e/fixtures/
 var fixturesEntryPaths = ['component/selector.js', 'ng2do/ng2do.js', 'view/template-url.js'];
+
+/* e2e mkdir */
+var allE2eMkdir = target.map(function (v) {
+  var taskName = 'e2e-mkdir:' + v;
+  _gulp2['default'].task(taskName, _shell2['default'].task(['\n    mkdir -p ' + opt.e2e + '/' + v + '/node_modules &&\n    mkdir ' + opt.e2e + '/' + v + '/node_modules/angular\n    mkdir ' + opt.e2e + '/' + v + '/node_modules/angular2\n  ']));
+  return taskName;
+});
+_gulp2['default'].task('e2e-mkdir', allE2eMkdir);
+
+/* e2e install long-stack-trace-zone */
+var allE2eZoneJs = target.map(function (v) {
+  var taskName = 'e2e-zone-js:' + v;
+
+  var zoneJsName = 'zone.js';
+  var stackTraceName = 'long-stack-trace-zone.js';
+  var repo = 'https://raw.githubusercontent.com/angular/zone.js/master';
+  var zoneJs = '' + repo + '/' + zoneJsName;
+  var stackTrace = '' + repo + '/' + stackTraceName;
+
+  if (v.slice(0, 1) !== '2' /* if !angular2 */) {
+    _gulp2['default'].task(taskName, _shell2['default'].task(['\n      cd ' + opt.e2e + '/' + v + ' &&\n      echo void 0\\; >> ' + zoneJsName + '\n      echo void 0\\; >> ' + stackTraceName + '\n    ']));
+    return taskName;
+  }
+
+  _gulp2['default'].task(taskName, _shell2['default'].task(['\n    cd ' + opt.e2e + '/' + v + ' &&\n    curl ' + zoneJs + ' -O &&\n    curl ' + stackTrace + ' -O\n  ']));
+  return taskName;
+});
+_gulp2['default'].task('e2e-zone-js', allE2eZoneJs);
+
+/* e2e install angular */
+var allE2eInstallAngularAfter = [];
+var allE2eInstallAngular = target.map(function (v) {
+  var taskName = 'e2e-install-angular:' + v;
+  if (v.slice(0, 1) !== '2' /* if !angular2 */) {
+    _gulp2['default'].task(taskName, _shell2['default'].task(['\n      cd ' + opt.e2e + '/' + v + '/node_modules &&\n      npm i ' + angularVersion[v] + '\n    ']));
+    return taskName;
+  }
+
+  var builder = 'commonjs-friendly-angular2';
+  var products = '' + opt.e2e + '/' + v + '/node_modules/' + builder + '/products';
+  _gulp2['default'].task(taskName, _shell2['default'].task(['\n    cd ' + opt.e2e + '/' + v + '/node_modules &&\n    npm i ' + builder + '\n  ']));
+  _gulp2['default'].task('' + taskName + '-after', _shell2['default'].task(['\n    mv -f ' + products + '/angular2    ' + opt.e2e + '/' + v + '/node_modules &&\n    mv -f ' + products + '/rtts_assert ' + opt.e2e + '/' + v + '/node_modules\n  ']));
+  allE2eInstallAngularAfter.push('' + taskName + '-after');
+  return taskName;
+});
+_gulp2['default'].task('e2e-install-angular', allE2eInstallAngular);
+_gulp2['default'].task('e2e-install-angular-after', allE2eInstallAngularAfter);
 
 /* e2e cp */
 var allE2eCp = target.map(function (v) {
   var taskName = 'e2e-cp:' + v;
   // For the passage of the build, the other versions Angular it is necessary to dummy
-  var dummyDest = v.slice(0, 1) === '2' /* if angular 2 */ ? 'angular' : 'angular2';
+  var dummyDest = v.slice(0, 1) === '2' /* if angular2 */ ? 'angular' : 'angular2';
   var dummyPath = '' + opt.e2e + '/' + v + '/node_modules/' + dummyDest;
   var original = 'dummy.js';
   var dummyName = dummyDest === 'angular' ? 'index.js' : 'angular2.js';
@@ -181,10 +234,16 @@ var allE2eBrowserify = target.map(function (v) {
 _gulp2['default'].task('e2e-browserify', Array.prototype.concat.apply([], allE2eBrowserify));
 
 /* e2e clean */
+_gulp2['default'].task('clean:init-e2e', _del2['default'].bind(null, target.map(function (v) {
+  return '' + opt.e2e + '/' + v + '/';
+})));
 _gulp2['default'].task('clean:e2e', _del2['default'].bind(null, target.map(function (v) {
   return '' + opt.e2e + '/' + v + '/*.html';
 })));
 
+_gulp2['default'].task('e2e:init', function (done) {
+  return _seq2['default']('clean:init-e2e', 'e2e-mkdir', ['e2e-install-angular', 'e2e-zone-js'], 'e2e-install-angular-after', done);
+});
 _gulp2['default'].task('build:fixtures', function (done) {
   return _seq2['default']('clean:e2e', 'ts:fixtures', ['e2e-cp', 'e2e-ln'], 'e2e-browserify', done);
 });
