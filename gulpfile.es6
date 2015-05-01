@@ -162,4 +162,5 @@ gulp.task('clean:e2e', del.bind(null, target.map((v) => {
   return `${opt.e2e}/${v}/*.html`;
 })));
 
-gulp.task('e2e', (done) => seq('clean:e2e', 'ts:fixtures', ['e2e-cp', 'e2e-ln'], 'e2e-browserify', 'mocha:e2e', done));
+gulp.task('build:fixtures', (done) => seq('clean:e2e', 'ts:fixtures', ['e2e-cp', 'e2e-ln'], 'e2e-browserify', done));
+gulp.task('e2e', (done) => seq('build:fixtures', 'mocha:e2e', done));

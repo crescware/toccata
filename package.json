@@ -42,6 +42,7 @@
     "1-4": "cd ./test/e2e/1-4-latest     && ss --port 1400 --debug true",
     "2-0": "cd ./test/e2e/2-0-0-alpha-21 && ss --port 2000 --debug true",
     "build": "gulp build",
+    "build:fixtures": "gulp build:fixtures",
     "dtsm": "dtsm install",
     "e2e": "gulp e2e",
     "gulpfile": "babel gulpfile.es6 -o gulpfile.js",

@@ -185,6 +185,9 @@ _gulp2['default'].task('clean:e2e', _del2['default'].bind(null, target.map(funct
   return '' + opt.e2e + '/' + v + '/*.html';
 })));
 
+_gulp2['default'].task('build:fixtures', function (done) {
+  return _seq2['default']('clean:e2e', 'ts:fixtures', ['e2e-cp', 'e2e-ln'], 'e2e-browserify', done);
+});
 _gulp2['default'].task('e2e', function (done) {
-  return _seq2['default']('clean:e2e', 'ts:fixtures', ['e2e-cp', 'e2e-ln'], 'e2e-browserify', 'mocha:e2e', done);
+  return _seq2['default']('build:fixtures', 'mocha:e2e', done);
 });
