@@ -49,6 +49,7 @@ var bin = {
 
 /* clean */
 _gulp2['default'].task('clean', _del2['default'].bind(null, ['' + opt.fixtures + '/**/*.js', '' + opt.fixtures + '/**/*.js.map', '' + opt.src + '/**/*.js', '' + opt.src + '/**/*.js.map', '' + opt.test + '/unit/**/*.js', '' + opt.test + '/unit/**/*.js.map', opt.testEspowered]));
+_gulp2['default'].task('clean:lib', _del2['default'].bind(null, ['' + opt.lib]));
 
 /* ts */
 var tsc = '' + bin.tsc + ' -t es5 -m commonjs --noImplicitAny --noEmitOnError';

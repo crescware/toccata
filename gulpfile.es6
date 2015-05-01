@@ -34,6 +34,9 @@ gulp.task('clean', del.bind(null, [
   `${opt.test    }/unit/**/*.js.map`,
   opt.testEspowered
 ]));
+gulp.task('clean:lib', del.bind(null, [
+  `${opt.lib}`
+]));
 
 /* ts */
 const tsc = `${bin.tsc} -t es5 -m commonjs --noImplicitAny --noEmitOnError`;
