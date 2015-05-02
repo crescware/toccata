@@ -15,7 +15,7 @@ displayMode(toccata);
   selector: 'hello'
 })
 @View({
-  template: `<p>Hello!</p>`
+  template: `<p id="hello">Hello!</p>`
 })
 class HelloController {
   constructor() {
