@@ -17,6 +17,7 @@ interface ToccataStatic {
 }
 
 export function toccata(angular: any): Toccata {
+  if (!angular) {throw new Error('AngularJS or Angular 2 is required')}
   return new Toccata(angular);
 }
 (<ToccataStatic>toccata).version = pkg.version;
