@@ -24,10 +24,10 @@ class ToccataForV1 implements ToccataProps {
    * @returns {Function}
    */
   _bootstrapFactory(): Function {
-    return (clazz: any, requires?: any[]) => {
+    return (controller: any, requires?: any[]) => {
       requires = requires || [];
       requires.push(this._uuid);
-      const selector = clazz._toccataSelectorCache;
+      const selector = controller._toccataSelectorCache;
       const element = document.querySelector(selector);
       this.core.bootstrap(element, requires);
     };
