@@ -48,9 +48,9 @@ class ToccataForV1 implements ToccataProps {
         if (!component._toccataDdoCache) {throw new Error('@View annotation is required')}
 
         component._toccataSelectorCache = def.selector;
-        component._toccataDdoCache.restrict = 'E';
-        component._toccataDdoCache.controller = component;
-        component._toccataDdoCache.controllerAs = component.name || 'Controller';
+        component._toccataDdoCache.restrict     = 'E';
+        component._toccataDdoCache.controller   = component;
+        component._toccataDdoCache.controllerAs = component.name || 'Component';
 
         try {
           this.core.module(this._uuid);
