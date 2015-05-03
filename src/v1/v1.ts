@@ -27,9 +27,12 @@ class ToccataForV1 implements ToccataProps {
   _bootstrapFactory(): (component: any, requires?: string[]) => void {
     return (component: any, requires?: string[]) => {
       if (!component) {throw new TypeError('bootstrap requires the component constructor')}
+
+      const selector = component._toccataSelectorCache;
+      if (!selector) {throw new TypeError('bootstrap requires the selector of component, you can use annotation')}
+
       requires = requires || [];
       requires.push(this._uuid);
-      const selector = component._toccataSelectorCache;
       const element = document.querySelector(selector);
       this.core.bootstrap(element, requires);
     };
