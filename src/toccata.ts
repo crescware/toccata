@@ -36,6 +36,7 @@ export class Toccata implements ToccataProps {
   Parent: Function;
 
   NgController: Decoratable;
+  NgDirective: Decoratable;
   _uuid: string;
 
   /**
@@ -59,6 +60,7 @@ export class Toccata implements ToccataProps {
     }
     if (this.isV1()) {
       this.NgController = this.NgControllerBase.bind(this);
+      this.NgDirective  = this.NgDirectiveBase.bind(this);
       this._uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
@@ -127,6 +129,61 @@ export class Toccata implements ToccataProps {
       }
 
       this.module(def.module).controller(ctrlName, controller);
+      return controller;
+    };
+  }
+
+  /**
+   * Only V1
+   *
+   * usage
+   * @NgDirective({
+   *   name: 'directiveName' // and set also as 'controllerAs'
+   * })
+   * class Controller{
+   *   //...
+   * }
+   *
+   * @param {*} [def]
+   */
+  private NgDirectiveBase(def?: any): (controller: any) => any {
+    const funcName = 'NgDirective';
+    def = def || {};
+    return (controller: any) => {
+      const dirName = def.name || '';
+      if (!dirName) {throw new Error(`name is required. @${funcName}({name: "directiveName"})`)}
+      if (1 < this.coreModule.length && !def.module) {
+        throw new Error(`Toccata has some angular.module. You must specify the module name. @${funcName}({module: "moduleName", name: "${def.name}"})`)
+      }
+
+      const ddo = {
+        restrict:     def.restrict || 'E',
+        controller:   controller,
+        controllerAs: dirName,
+      };
+
+      // All of the property is not supported yet
+      // The support is also undecided
+      // Does everyone use all?
+      const availableProps = [
+        'compile',
+        'link',
+        'require',
+        'scope',
+        'template',
+        'templateUrl'
+      ];
+
+      availableProps.forEach((prop) => {
+        if (def[prop]) {(<any>ddo)[prop] = def[prop]}
+      });
+
+      if (this.coreModule.length === 1) {
+        this.coreModule[0].directive(dirName, () => ddo);
+        return controller;
+      }
+
+      this.module(def.module).directive(dirName, () => ddo);
       return controller;
     };
   }

@@ -14,5 +14,6 @@ export interface ToccataProps {
   Parent: Function;
 
   NgController: Decoratable;
+  NgDirective: Decoratable;
   _uuid: string;
 }
