@@ -109,7 +109,7 @@ export class Toccata implements ToccataProps {
    * }
    *
    * @param {*} [def]
-   * @constructor
+   * @returns {Function}
    */
   private NgControllerBase(def?: any): (controller: any) => any {
     def = def || {};
