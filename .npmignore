@@ -7,11 +7,14 @@ npm-debug.log
 
 # for gulp
 gulpfile.es6
+gulpfile.js
+standalone-entry.js
 .tscache/
 coverage/
 typings/
 
 # for test
+test/
 test-es5/
 test-espowered/
 test/e2e/**/
@@ -21,3 +24,4 @@ test/e2e/**/
 # TypeScript
 src/
 *.ts
+dtsm.json
