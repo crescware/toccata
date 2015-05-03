@@ -23,4 +23,5 @@ test/e2e/**/
 *.js.map
 !gulpfile.js
 !index.js
+!standalone-entry.js
 !test/e2e/utils/dummy.js

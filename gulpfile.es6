@@ -92,8 +92,9 @@ gulp.task('copy:src', () => {
     .src(`${opt.src}/**/*.js`)
     .pipe(gulp.dest(opt.lib));
 });
+gulp.task('build:standalone', shell.task([`${bin.browserify} ./standalone-entry.js --standalone toccata -o toccata.js`]));
 gulp.task('build:src', (done) => seq(['clean:lib', 'ts:src'], 'copy:src', done));
-gulp.task('build',     (done) => seq('build:src', done));
+gulp.task('build',     (done) => seq('build:src', 'build:standalone', done));
 
 /* test */
 function mochaTask(target) {

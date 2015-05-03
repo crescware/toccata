@@ -127,11 +127,12 @@ _gulp2['default'].task('watch', function () {
 _gulp2['default'].task('copy:src', function () {
   _gulp2['default'].src('' + opt.src + '/**/*.js').pipe(_gulp2['default'].dest(opt.lib));
 });
+_gulp2['default'].task('build:standalone', _shell2['default'].task(['' + bin.browserify + ' ./standalone-entry.js --standalone toccata -o toccata.js']));
 _gulp2['default'].task('build:src', function (done) {
   return _seq2['default'](['clean:lib', 'ts:src'], 'copy:src', done);
 });
 _gulp2['default'].task('build', function (done) {
-  return _seq2['default']('build:src', done);
+  return _seq2['default']('build:src', 'build:standalone', done);
 });
 
 /* test */
