@@ -112,12 +112,13 @@ export class Toccata implements ToccataProps {
    * @returns {Function}
    */
   private NgControllerBase(def?: any): (controller: any) => any {
+    const funcName = 'NgController';
     def = def || {};
     return (controller: any) => {
       const ctrlName = def.name || controller.name || '';
-      if (!ctrlName) {throw new Error('name is required. @NgController({name: "controllerName"})')}
+      if (!ctrlName) {throw new Error(`name is required. @${funcName}({name: "controllerName"})`)}
       if (1 < this.coreModule.length && !def.module) {
-        throw new Error(`Toccata has some angular.module. You must specify the module name. @NgController({module: "moduleName", name: "${def.name}"})`)
+        throw new Error(`Toccata has some angular.module. You must specify the module name. @${funcName}({module: "moduleName", name: "${def.name}"})`)
       }
 
       if (this.coreModule.length === 1) {
