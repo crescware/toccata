@@ -20,7 +20,9 @@
     "licensify": "^1.1.0",
     "nightmare": "^1.8.1",
     "power-assert": "^0.11.0",
+    "proxyquire": "^1.4.0",
     "run-sequence": "^1.0.2",
+    "sinon": "^1.14.1",
     "superstatic": "^2.2.0",
     "typescript": "^1.5.0-alpha",
     "watchify": "^3.1.1"
