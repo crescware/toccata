@@ -36,8 +36,7 @@ class ToccataForV1 implements ToccataProps {
 
       requires = requires || [];
       requires.push(this._uuid);
-      const element = document.querySelector(selector);
-      this.core.bootstrap(element, requires);
+      this.core.bootstrap(document.body, requires);
     };
   }
 

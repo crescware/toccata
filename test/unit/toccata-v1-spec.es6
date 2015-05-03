@@ -12,7 +12,7 @@ const mock = {
     directive: () => {}
   },
   document: {
-    querySelector: () => {}
+    body: 'body'
   }
 };
 
@@ -23,9 +23,6 @@ const stub = {
   },
   angularModule: {
     directive: sinon.stub(mock.angularModule, 'directive')
-  },
-  document: {
-    querySelector: sinon.stub(mock.document, 'querySelector').returns('element')
   }
 };
 
@@ -93,7 +90,7 @@ describe('Toccata V1', () => {
     context('when "requires" is not', () => {
       it('should be given an element to bootstrap arg[0]', () => {
         toccata.bootstrap(component);
-        assert(stub.angular.bootstrap.getCall(0).args[0] === 'element');
+        assert(stub.angular.bootstrap.getCall(0).args[0] === 'body');
       });
 
       it('should be given an array contains uuid to bootstrap arg[1]', () => {
