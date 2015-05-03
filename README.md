@@ -37,12 +37,15 @@ bootstrap(HelloController);
 
 NOTICE: Angular 2 is not supported building with Babel currently, we use ugly hacking for tests. Not recommended still you use in Angular 2.
 
+## More samples
+[you can see sample sources here.](https://github.com/crescware/toccata-samples)
+
 ## TODO
 
 - Support default export of toccata (TypeScript 1.5-alpha has a problem)
 - Automatically e2e test (Now it has confirmed manually)
 - More migration support and further compatibility
-- Support without browserify, in other words support `<script src="">`
+- ~~Support without browserify, in other words support `<script src="">`~~
 - Flux in Angular
 
 ## Goal
