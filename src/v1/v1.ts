@@ -46,7 +46,7 @@ class ToccataForV1 implements ToccataProps {
   _ComponentFactory(): Decoratable {
     return (def: ComponentDefinition) => {
       return (component: any) => {
-        if (!component._toccataDdoCache) {throw new Error('@View annotation is required')}
+        if (!component._toccataDdoCache) {throw new Error('You must first use the @View annotation')}
 
         component._toccataSelectorCache = def.selector;
         component._toccataDdoCache.restrict     = 'E';
