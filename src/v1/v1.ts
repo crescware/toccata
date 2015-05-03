@@ -44,14 +44,13 @@ class ToccataForV1 implements ToccataProps {
    */
   _ComponentFactory(): Decoratable {
     return (def: any) => {
-      return (decoratee: any) => {
-        if (!decoratee._toccataDdoCache) {
-          throw new Error('View annotation is required');
-        }
-        decoratee._toccataSelectorCache = def.selector;
-        decoratee._toccataDdoCache.restrict = 'E';
-        decoratee._toccataDdoCache.controller = decoratee;
-        decoratee._toccataDdoCache.controllerAs = decoratee.name || 'Controller';
+      return (component: any) => {
+        if (!component._toccataDdoCache) {throw new Error('@View annotation is required')}
+
+        component._toccataSelectorCache = def.selector;
+        component._toccataDdoCache.restrict = 'E';
+        component._toccataDdoCache.controller = component;
+        component._toccataDdoCache.controllerAs = component.name || 'Controller';
 
         // Initialize a module if cannot take it
         try {
@@ -61,8 +60,9 @@ class ToccataForV1 implements ToccataProps {
         }
 
         this.core.module(this._uuid)
-          .directive(def.selector, () => decoratee._toccataDdoCache);
-        return decoratee;
+          .directive(def.selector, () => component._toccataDdoCache);
+
+        return component;
       };
     };
   }
