@@ -14,14 +14,6 @@ var _gulp = require('gulp');
 
 var _gulp2 = _interopRequireWildcard(_gulp);
 
-var _seq = require('run-sequence');
-
-var _seq2 = _interopRequireWildcard(_seq);
-
-var _shell = require('gulp-shell');
-
-var _shell2 = _interopRequireWildcard(_shell);
-
 var _mocha = require('gulp-mocha');
 
 var _mocha2 = _interopRequireWildcard(_mocha);
@@ -29,6 +21,14 @@ var _mocha2 = _interopRequireWildcard(_mocha);
 var _path = require('path');
 
 var _path2 = _interopRequireWildcard(_path);
+
+var _seq = require('run-sequence');
+
+var _seq2 = _interopRequireWildcard(_seq);
+
+var _shell = require('gulp-shell');
+
+var _shell2 = _interopRequireWildcard(_shell);
 
 var opt = {
   lib: './lib',
@@ -38,18 +38,18 @@ var opt = {
   testEspowered: './test-espowered'
 };
 opt.e2e = '' + opt.test + '/e2e';
-opt.fixtures = '' + opt.e2e + '/fixtures';
 opt.e2eUtils = '' + opt.e2e + '/utils';
+opt.fixtures = '' + opt.e2e + '/fixtures';
 
 var bin = {
-  tsc: '' + opt.npmbin + '/tsc',
-  tslint: '' + opt.npmbin + '/tslint',
   babel: '' + opt.npmbin + '/babel',
-  browserify: '' + opt.npmbin + '/browserify'
+  browserify: '' + opt.npmbin + '/browserify',
+  tsc: '' + opt.npmbin + '/tsc',
+  tslint: '' + opt.npmbin + '/tslint'
 };
 
 /* clean */
-_gulp2['default'].task('clean', _del2['default'].bind(null, ['' + opt.fixtures + '/**/*.js', '' + opt.fixtures + '/**/*.js.map', '' + opt.src + '/**/*.js', '' + opt.src + '/**/*.js.map', '' + opt.test + '/unit/**/*.js', '' + opt.test + '/unit/**/*.js.map', opt.testEspowered]));
+_gulp2['default'].task('clean', _del2['default'].bind(null, ['' + opt.fixtures + '/**/*.js.map', '' + opt.fixtures + '/**/*.js', '' + opt.src + '/**/*.js.map', '' + opt.src + '/**/*.js', '' + opt.test + '/unit/**/*.js.map', '' + opt.test + '/unit/**/*.js', opt.testEspowered]));
 _gulp2['default'].task('clean:lib', _del2['default'].bind(null, ['' + opt.lib]));
 
 /* tslint */
@@ -58,13 +58,13 @@ _gulp2['default'].task('tslint:src_', _shell2['default'].task(['find ' + opt.src
 
 /* ts */
 var tsc = '' + bin.tsc + ' -t es5 -m commonjs --noImplicitAny --noEmitOnError';
-_gulp2['default'].task('ts:src_', _shell2['default'].task(['find ' + opt.src + '      -name *.ts | xargs ' + tsc]));
 _gulp2['default'].task('ts:fixtures_', _shell2['default'].task(['find ' + opt.fixtures + ' -name *.ts | xargs ' + tsc]));
-_gulp2['default'].task('ts:src', function (done) {
-  return _seq2['default']('clean', 'tslint:src_', 'ts:src_', done);
-});
+_gulp2['default'].task('ts:src_', _shell2['default'].task(['find ' + opt.src + '      -name *.ts | xargs ' + tsc]));
 _gulp2['default'].task('ts:fixtures', function (done) {
   return _seq2['default']('clean', 'ts:fixtures_', done);
+});
+_gulp2['default'].task('ts:src', function (done) {
+  return _seq2['default']('clean', 'tslint:src_', 'ts:src_', done);
 });
 _gulp2['default'].task('ts', function (done) {
   return _seq2['default']('clean', 'tslint:src_', ['ts:src_', 'ts:fixtures_'], done);
@@ -74,18 +74,18 @@ _gulp2['default'].task('ts', function (done) {
 function babelForTest(target) {
   return '' + bin.babel + ' ' + opt.test + '/' + target + ' --plugins espower --out-dir ' + opt.testEspowered + '/' + target;
 }
-_gulp2['default'].task('babel:unit', _shell2['default'].task([babelForTest('unit')]));
 _gulp2['default'].task('babel:e2e', _shell2['default'].task([babelForTest('e2e/specs')]));
+_gulp2['default'].task('babel:unit', _shell2['default'].task([babelForTest('unit')]));
 
 /* browserify */
-_gulp2['default'].task('watchify_', _shell2['default'].task(['watchify']));
 _gulp2['default'].task('browserify_', _shell2['default'].task(['browserify']));
+_gulp2['default'].task('watchify_', _shell2['default'].task(['watchify']));
 
-_gulp2['default'].task('watchify', function (done) {
-  return _seq2['default']('ts', 'babel', 'watchify_', done);
-});
 _gulp2['default'].task('browserify', function (done) {
   return _seq2['default']('ts', 'babel', 'browserify_', done);
+});
+_gulp2['default'].task('watchify', function (done) {
+  return _seq2['default']('ts', 'babel', 'watchify_', done);
 });
 
 /* watch */
@@ -142,8 +142,8 @@ function mochaTask(target) {
     });
   };
 }
-_gulp2['default'].task('mocha:unit', mochaTask('unit'));
 _gulp2['default'].task('mocha:e2e', mochaTask('e2e/specs'));
+_gulp2['default'].task('mocha:unit', mochaTask('unit'));
 _gulp2['default'].task('test', function (done) {
   return _seq2['default']('ts:src', 'babel:unit', 'mocha:unit', done);
 });

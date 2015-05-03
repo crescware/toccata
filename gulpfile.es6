@@ -1,11 +1,11 @@
 'use strict';
-import del from 'del';
-import glob from 'glob';
-import gulp from 'gulp';
-import seq from 'run-sequence';
-import shell from 'gulp-shell';
+import del   from 'del';
+import glob  from 'glob';
+import gulp  from 'gulp';
 import mocha from 'gulp-mocha';
-import path from 'path';
+import path  from 'path';
+import seq   from 'run-sequence';
+import shell from 'gulp-shell';
 
 const opt = {
   lib:           './lib',
@@ -15,24 +15,24 @@ const opt = {
   testEspowered: './test-espowered'
 };
 opt.e2e      = `${opt.test}/e2e`;
-opt.fixtures = `${opt.e2e}/fixtures`;
 opt.e2eUtils = `${opt.e2e}/utils`;
+opt.fixtures = `${opt.e2e}/fixtures`;
 
 const bin = {
-  tsc:        `${opt.npmbin}/tsc`,
-  tslint:     `${opt.npmbin}/tslint`,
   babel:      `${opt.npmbin}/babel`,
-  browserify: `${opt.npmbin}/browserify`
+  browserify: `${opt.npmbin}/browserify`,
+  tsc:        `${opt.npmbin}/tsc`,
+  tslint:     `${opt.npmbin}/tslint`
 };
 
 /* clean */
 gulp.task('clean', del.bind(null, [
-  `${opt.fixtures}/**/*.js`,
   `${opt.fixtures}/**/*.js.map`,
-  `${opt.src     }/**/*.js`,
+  `${opt.fixtures}/**/*.js`,
   `${opt.src     }/**/*.js.map`,
-  `${opt.test    }/unit/**/*.js`,
+  `${opt.src     }/**/*.js`,
   `${opt.test    }/unit/**/*.js.map`,
+  `${opt.test    }/unit/**/*.js`,
   opt.testEspowered
 ]));
 gulp.task('clean:lib', del.bind(null, [
@@ -45,25 +45,25 @@ gulp.task('tslint:src_', shell.task([`find ${opt.src} -name *.ts | xargs ${tslin
 
 /* ts */
 const tsc = `${bin.tsc} -t es5 -m commonjs --noImplicitAny --noEmitOnError`;
-gulp.task('ts:src_',      shell.task([`find ${opt.src}      -name *.ts | xargs ${tsc}`]));
 gulp.task('ts:fixtures_', shell.task([`find ${opt.fixtures} -name *.ts | xargs ${tsc}`]));
-gulp.task('ts:src',      (done) => seq('clean', 'tslint:src_', 'ts:src_',      done));
+gulp.task('ts:src_',      shell.task([`find ${opt.src}      -name *.ts | xargs ${tsc}`]));
 gulp.task('ts:fixtures', (done) => seq('clean', 'ts:fixtures_', done));
+gulp.task('ts:src',      (done) => seq('clean', 'tslint:src_', 'ts:src_',      done));
 gulp.task('ts',          (done) => seq('clean', 'tslint:src_', ['ts:src_', 'ts:fixtures_'], done));
 
 /* babel */
 function babelForTest(target) {
   return `${bin.babel} ${opt.test}/${target} --plugins espower --out-dir ${opt.testEspowered}/${target}`;
 }
-gulp.task('babel:unit', shell.task([babelForTest('unit')]));
 gulp.task('babel:e2e',  shell.task([babelForTest('e2e/specs')]));
+gulp.task('babel:unit', shell.task([babelForTest('unit')]));
 
 /* browserify */
-gulp.task('watchify_',   shell.task([`watchify`]));
 gulp.task('browserify_', shell.task([`browserify`]));
+gulp.task('watchify_',   shell.task([`watchify`]));
 
-gulp.task('watchify',   (done) => seq('ts', 'babel', 'watchify_', done));
 gulp.task('browserify', (done) => seq('ts', 'babel', 'browserify_', done));
+gulp.task('watchify',   (done) => seq('ts', 'babel', 'watchify_', done));
 
 /* watch */
 gulp.task('watch:js', (done) => seq('clean:bundle', ['ts:example_', 'ts:lib_'], ['babel:example', 'babel:lib'], done));
@@ -104,8 +104,8 @@ function mochaTask(target) {
       .on('error', (err) => process.exit(1));
   };
 }
-gulp.task('mocha:unit', mochaTask('unit'));
 gulp.task('mocha:e2e',  mochaTask('e2e/specs'));
+gulp.task('mocha:unit', mochaTask('unit'));
 gulp.task('test', (done) => seq('ts:src', 'babel:unit', 'mocha:unit', done));
 
 /* e2e build */
