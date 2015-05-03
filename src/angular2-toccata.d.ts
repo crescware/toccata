@@ -3,7 +3,7 @@
  */
 export interface ComponentDefinition {
   selector: string;
-  properties: any;          // Does not support in Toccata 0.1.0 V1 mode
+  properties: any;          // Does not support in Toccata 0.2.x V1 mode
   events: any[];            // ditto
   hostListeners: any;       // ditto
   hostProperties: any;      // ditto
@@ -19,6 +19,6 @@ export interface ComponentDefinition {
 export interface ViewDefinition {
   templateUrl: string;
   template: string;
-  directives: any[]; // Does not support in Toccata 0.1.0 V1 mode
+  directives: any[]; // Does not support in Toccata 0.2.x V1 mode
   renderer: string;  // ditto
 }
