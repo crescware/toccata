@@ -47,11 +47,12 @@ class ToccataForV1 implements ToccataProps {
     return (def: ComponentDefinition) => {
       return (component: any) => {
         if (!component._toccataDdoCache) {throw new Error('You must first use the @View annotation')}
-
         component._toccataSelectorCache = def.selector;
-        component._toccataDdoCache.restrict     = 'E';
-        component._toccataDdoCache.controller   = component;
-        component._toccataDdoCache.controllerAs = component.name || 'Component';
+
+        const ddo = component._toccataDdoCache;
+        ddo.restrict     = 'E';
+        ddo.controller   = component;
+        ddo.controllerAs = component.name || 'Component';
 
         try {
           this.core.module(this._uuid);
@@ -61,7 +62,7 @@ class ToccataForV1 implements ToccataProps {
         }
 
         this.core.module(this._uuid)
-          .directive(def.selector, () => component._toccataDdoCache);
+          .directive(component._toccataSelectorCache, () => ddo);
 
         return component;
       };
