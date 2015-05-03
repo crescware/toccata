@@ -14,6 +14,7 @@ class ToccataForV2 implements ToccataProps {
   Ancestor: Function;
   Parent: Function;
 
+  NgController: Decoratable;
   _uuid: string;
 
   /**

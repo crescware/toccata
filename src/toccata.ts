@@ -35,6 +35,7 @@ export class Toccata implements ToccataProps {
   Ancestor: Function;
   Parent: Function;
 
+  NgController: Decoratable;
   _uuid: string;
 
   /**
@@ -57,6 +58,7 @@ export class Toccata implements ToccataProps {
       this.For = this.core.For || console.warn('angular2.For not found');
     }
     if (this.isV1()) {
+      this.NgController = this.NgControllerBase.bind(this);
       this._uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
@@ -94,7 +96,40 @@ export class Toccata implements ToccataProps {
 
     return this.coreModule[corresponding];
   }
-  
+
+  /**
+   * Only V1
+   *
+   * usage
+   * @NgController({
+   *   name: 'ControllerName'
+   * })
+   * class Controller{
+   *   //...
+   * }
+   *
+   * @param {*} [def]
+   * @constructor
+   */
+  private NgControllerBase(def?: any): (controller: any) => any {
+    def = def || {};
+    return (controller: any) => {
+      const ctrlName = def.name || controller.name || '';
+      if (!ctrlName) {throw new Error('name is required. @NgController({name: "controllerName"})')}
+      if (1 < this.coreModule.length && !def.module) {
+        throw new Error(`Toccata has some angular.module. You must specify the module name. @NgController({module: "moduleName", name: "${def.name}"})`)
+      }
+
+      if (this.coreModule.length === 1) {
+        this.coreModule[0].controller(ctrlName, controller);
+        return controller;
+      }
+
+      this.module(def.module).controller(ctrlName, controller);
+      return controller;
+    };
+  }
+
   /**
    * @returns {boolean}
    */
