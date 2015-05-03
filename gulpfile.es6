@@ -20,6 +20,7 @@ opt.e2eUtils = `${opt.e2e}/utils`;
 
 const bin = {
   tsc:        `${opt.npmbin}/tsc`,
+  tslint:     `${opt.npmbin}/tslint`,
   babel:      `${opt.npmbin}/babel`,
   browserify: `${opt.npmbin}/browserify`
 };
@@ -38,13 +39,17 @@ gulp.task('clean:lib', del.bind(null, [
   `${opt.lib}`
 ]));
 
+/* tslint */
+const tslint = `${bin.tslint} -c ./tslint.json -f`;
+gulp.task('tslint:src_', shell.task([`find ${opt.src} -name *.ts | xargs ${tslint}`]));
+
 /* ts */
 const tsc = `${bin.tsc} -t es5 -m commonjs --noImplicitAny --noEmitOnError`;
 gulp.task('ts:src_',      shell.task([`find ${opt.src}      -name *.ts | xargs ${tsc}`]));
 gulp.task('ts:fixtures_', shell.task([`find ${opt.fixtures} -name *.ts | xargs ${tsc}`]));
-gulp.task('ts:src',      (done) => seq('clean', 'ts:src_',      done));
+gulp.task('ts:src',      (done) => seq('clean', 'tslint:src_', 'ts:src_',      done));
 gulp.task('ts:fixtures', (done) => seq('clean', 'ts:fixtures_', done));
-gulp.task('ts',          (done) => seq('clean', ['ts:src_', 'ts:fixtures_'], done));
+gulp.task('ts',          (done) => seq('clean', 'tslint:src_', ['ts:src_', 'ts:fixtures_'], done));
 
 /* babel */
 function babelForTest(target) {

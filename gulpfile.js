@@ -43,6 +43,7 @@ opt.e2eUtils = '' + opt.e2e + '/utils';
 
 var bin = {
   tsc: '' + opt.npmbin + '/tsc',
+  tslint: '' + opt.npmbin + '/tslint',
   babel: '' + opt.npmbin + '/babel',
   browserify: '' + opt.npmbin + '/browserify'
 };
@@ -51,18 +52,22 @@ var bin = {
 _gulp2['default'].task('clean', _del2['default'].bind(null, ['' + opt.fixtures + '/**/*.js', '' + opt.fixtures + '/**/*.js.map', '' + opt.src + '/**/*.js', '' + opt.src + '/**/*.js.map', '' + opt.test + '/unit/**/*.js', '' + opt.test + '/unit/**/*.js.map', opt.testEspowered]));
 _gulp2['default'].task('clean:lib', _del2['default'].bind(null, ['' + opt.lib]));
 
+/* tslint */
+var tslint = '' + bin.tslint + ' -c ./tslint.json -f';
+_gulp2['default'].task('tslint:src_', _shell2['default'].task(['find ' + opt.src + ' -name *.ts | xargs ' + tslint]));
+
 /* ts */
 var tsc = '' + bin.tsc + ' -t es5 -m commonjs --noImplicitAny --noEmitOnError';
 _gulp2['default'].task('ts:src_', _shell2['default'].task(['find ' + opt.src + '      -name *.ts | xargs ' + tsc]));
 _gulp2['default'].task('ts:fixtures_', _shell2['default'].task(['find ' + opt.fixtures + ' -name *.ts | xargs ' + tsc]));
 _gulp2['default'].task('ts:src', function (done) {
-  return _seq2['default']('clean', 'ts:src_', done);
+  return _seq2['default']('clean', 'tslint:src_', 'ts:src_', done);
 });
 _gulp2['default'].task('ts:fixtures', function (done) {
   return _seq2['default']('clean', 'ts:fixtures_', done);
 });
 _gulp2['default'].task('ts', function (done) {
-  return _seq2['default']('clean', ['ts:src_', 'ts:fixtures_'], done);
+  return _seq2['default']('clean', 'tslint:src_', ['ts:src_', 'ts:fixtures_'], done);
 });
 
 /* babel */
