@@ -1,5 +1,5 @@
 'use strict';
-import {ComponentDefinition} from '../angular2-toccata';
+import {ComponentDefinition, ViewDefinition} from '../angular2-toccata';
 import {document} from '../browser-dependencies';
 import {ToccataProps, Decoratable} from '../toccata-props';
 
@@ -74,15 +74,14 @@ class ToccataForV1 implements ToccataProps {
    * @returns {Decoratable}
    */
   _ViewFactory(): Decoratable {
-    return (def: any) => {
-      const ddo = {
-        template: def.template,
-        templateUrl: def.templateUrl
-      };
-
-      return (decoratee: any) => {
-        decoratee._toccataDdoCache = ddo;
-        return decoratee;
+    return (def: ViewDefinition) => {
+      return (component: any) => {
+        if (!def.template && !def.templateUrl) {throw new Error('template or templateUrl is required')}
+        component._toccataDdoCache = {
+          template: def.template,
+          templateUrl: def.templateUrl
+        };
+        return component;
       };
     };
   }

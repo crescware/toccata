@@ -12,3 +12,13 @@ export interface ComponentDefinition {
   changeDetection: string;  // ditto
   compileChildren: boolean; // ditto
 }
+
+/**
+ * @see https://angular.io/docs/js/latest/api/annotations/View-class.html
+ */
+export interface ViewDefinition {
+  templateUrl: string;
+  template: string;
+  directives: any[]; // Does not support in Toccata 0.1.0 V1 mode
+  renderer: string;  // ditto
+}
