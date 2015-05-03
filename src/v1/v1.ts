@@ -1,4 +1,5 @@
 'use strict';
+import {camelize} from '../string-utils';
 import {ComponentDefinition, ViewDefinition} from '../angular2-toccata';
 import {document} from '../browser-dependencies';
 import {ToccataProps, Decoratable} from '../toccata-props';
@@ -48,7 +49,8 @@ class ToccataForV1 implements ToccataProps {
     return (def: ComponentDefinition) => {
       return (component: any) => {
         if (!component._toccataDdoCache) {throw new Error('You must first use the @View annotation')}
-        component._toccataSelectorCache = def.selector;
+        
+        component._toccataSelectorCache = camelize(def.selector);
 
         const ddo = component._toccataDdoCache;
         ddo.restrict     = 'E';

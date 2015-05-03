@@ -172,6 +172,26 @@ describe('Toccata V1', () => {
         assert(ddo.controllerAs === 'DummyComponent');
       });
     });
+
+    describe('selector needs camelize', () => {
+      it('selector is foo', () => {
+        DummyComponent._toccataDdoCache = {};
+        toccata.Component({
+          selector: 'foo'
+        })(DummyComponent);
+
+        assert(stub.angularModule.directive.getCall(0).args[0] === 'foo');
+      });
+
+      it('selector is foo-bar', () => {
+        DummyComponent._toccataDdoCache = {};
+        toccata.Component({
+          selector: 'foo-bar'
+        })(DummyComponent);
+
+        assert(stub.angularModule.directive.getCall(0).args[0] === 'fooBar');
+      });
+    });
   });
 
   describe('View', () => {
