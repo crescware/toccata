@@ -8,7 +8,7 @@ class ToccataForV1 implements ToccataProps {
   Component: Decoratable;
   View: Decoratable;
   core: any; // angular
-  coreName: string; // module name, AngularJS 1.x only
+  coreModule: any[]; // angular.module
   operatingMode: string;
   For: Function;
 

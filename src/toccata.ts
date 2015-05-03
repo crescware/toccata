@@ -27,7 +27,7 @@ export class Toccata implements ToccataProps {
   Component: Decoratable;
   View: Decoratable;
   core: any; // angular
-  coreName: string; // module name, AngularJS 1.x only
+  coreModule: any[]; // angular.module
   operatingMode: string;
   For: Function;
 
@@ -65,19 +65,36 @@ export class Toccata implements ToccataProps {
   }
 
   /**
-   * AngularJS 1.x angular.module('name', ['requires'])
-   * NOTICE: We have plans to rename initModule() to a something better name
+   * Only V1
+   * Set AngularJS 1.x angular.module('name', ['requires'])
    *
-   * @param {string} moduleName
-   * @param {Array<string>} requires
+   * @param {any} mod
    */
-  initModule(moduleName: string, requires: string[]) {
-    if (this.isV2()) {return}
+  setModule(mod: any) {
+    if (this.isV2()) {return} // noop when v2
 
-    this.core.module(moduleName, requires);
-    this.coreName = moduleName;
+    this.coreModule = this.coreModule || [];
+    this.coreModule.push(mod);
   }
 
+  /**
+   * Only V1
+   * @param {string} name
+   * @returns {*} angular.module
+   */
+  module(name: string): any {
+    if (this.isV2()) {throw new Error('toccata.module is available only when the mode is v1')}
+
+    let corresponding: number;
+    const exists = this.coreModule.some((mod, i) => {
+      corresponding = i;
+      return mod.name === name;
+    });
+    if (!exists) {throw new Error(`Toccata has not a module "${name}". you can do toccata.setModule(angular.module("${name}", []))`)}
+
+    return this.coreModule[corresponding];
+  }
+  
   /**
    * @returns {boolean}
    */
