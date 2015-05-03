@@ -52,10 +52,10 @@ class ToccataForV1 implements ToccataProps {
         component._toccataDdoCache.controller = component;
         component._toccataDdoCache.controllerAs = component.name || 'Controller';
 
-        // Initialize a module if cannot take it
         try {
           this.core.module(this._uuid);
         } catch (e) {
+          // Initialize a module if cannot take it
           this.core.module(this._uuid, []);
         }
 
