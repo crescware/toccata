@@ -1,6 +1,7 @@
 'use strict';
-import {ToccataProps, Decoratable} from '../toccata-props';
+import {ComponentDefinition} from '../angular2-toccata';
 import {document} from '../browser-dependencies';
+import {ToccataProps, Decoratable} from '../toccata-props';
 
 class ToccataForV1 implements ToccataProps {
   bootstrap: Function;
@@ -43,7 +44,7 @@ class ToccataForV1 implements ToccataProps {
    * @returns {Decoratable}
    */
   _ComponentFactory(): Decoratable {
-    return (def: any) => {
+    return (def: ComponentDefinition) => {
       return (component: any) => {
         if (!component._toccataDdoCache) {throw new Error('@View annotation is required')}
 
