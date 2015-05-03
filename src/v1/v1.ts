@@ -1,5 +1,6 @@
 'use strict';
 import {ToccataProps, Decoratable} from '../toccata-props';
+import {document} from '../browser-dependencies';
 
 class ToccataForV1 implements ToccataProps {
   bootstrap: Function;
@@ -24,10 +25,11 @@ class ToccataForV1 implements ToccataProps {
    * @returns {Function}
    */
   _bootstrapFactory(): Function {
-    return (controller: any, requires?: any[]) => {
+    return (component: any, requires?: any[]) => {
+      if (!component) {throw new TypeError('bootstrap requires the component constructor')}
       requires = requires || [];
       requires.push(this._uuid);
-      const selector = controller._toccataSelectorCache;
+      const selector = component._toccataSelectorCache;
       const element = document.querySelector(selector);
       this.core.bootstrap(element, requires);
     };
