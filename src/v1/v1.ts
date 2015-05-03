@@ -22,10 +22,10 @@ class ToccataForV1 implements ToccataProps {
    * If you are already doing Toccata#initModule(), it is not nothing
    *
    * @private
-   * @returns {Function}
+   * @returns {function(*, string[]): void}
    */
-  _bootstrapFactory(): Function {
-    return (component: any, requires?: any[]) => {
+  _bootstrapFactory(): (component: any, requires?: string[]) => void {
+    return (component: any, requires?: string[]) => {
       if (!component) {throw new TypeError('bootstrap requires the component constructor')}
       requires = requires || [];
       requires.push(this._uuid);
