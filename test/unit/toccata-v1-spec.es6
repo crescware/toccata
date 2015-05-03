@@ -176,4 +176,53 @@ describe('Toccata V1', () => {
       });
     });
   });
+
+  describe('View', () => {
+    it('should be set a function', () => {
+      const actual = toccata.View;
+      assert(typeof actual === 'function');
+    });
+
+    context('when template is set', () => {
+      let ddo, decorated;
+      beforeEach(() => {
+        decorated = toccata.View({
+          template: '<tag></tag>'
+        })(DummyComponent);
+
+        ddo = decorated._toccataDdoCache;
+      });
+
+      it('should be returned component', () => {
+        assert(decorated.name === DummyComponent.name);
+      });
+
+      it('should be set to ddo.template', () => {
+        assert(ddo.template === '<tag></tag>');
+      });
+
+      it('should be NOT set to ddo.templateUrl', () => {
+        assert(!ddo.templateUrl);
+      });
+    });
+
+    context('when templateUrl is set', () => {
+      let ddo, decorated;
+      beforeEach(() => {
+        decorated = toccata.View({
+          templateUrl: 'template.html'
+        })(DummyComponent);
+
+        ddo = decorated._toccataDdoCache;
+      });
+
+      it('should be NOT set to ddo.template', () => {
+        assert(!ddo.template);
+      });
+
+      it('should be set to ddo.templateUrl', () => {
+        assert(ddo.templateUrl === 'template.html');
+      });
+    });
+  });
 });
