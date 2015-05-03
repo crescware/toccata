@@ -145,14 +145,22 @@ describe('Toccata V1', () => {
     });
 
     context('the common usage', () => {
-      let ddo;
+      let ddo, decorated;
       beforeEach(() => {
         DummyComponent._toccataDdoCache = {};
-        toccata.Component({
+        decorated = toccata.Component({
           selector: 'tag'
         })(DummyComponent);
 
         ddo = stub.angularModule.directive.getCall(0).args[1]();
+      });
+
+      it('should be returned component', () => {
+        assert(decorated.name === DummyComponent.name);
+      });
+
+      it('should be given selector to directive() args[0]', () => {
+        assert(stub.angularModule.directive.getCall(0).args[0] === 'tag');
       });
 
       it('should be set to ddo.restrict', () => {
