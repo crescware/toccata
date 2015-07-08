@@ -1,3 +1,8 @@
+# DISCONTINUED
+This idea has been discussed in issues of AngularJS official. We're looking forward to this progress.
+
+See https://github.com/angular/angular.js/issues/10007
+
 # Cresc Toccata
 **Cresc Toccata** is the utility for [AngularJS >= 1.3.14](https://github.com/angular/angular.js) / [Angular 2](https://github.com/angular/angular).
 
